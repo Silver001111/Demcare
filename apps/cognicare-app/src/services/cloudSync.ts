@@ -174,6 +174,7 @@ export const signInWithGoogle = async (): Promise<{
   success: boolean;
   user?: User;
   error?: string;
+  code?: string;
 }> => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
@@ -181,8 +182,9 @@ export const signInWithGoogle = async (): Promise<{
     return { success: true, user: result.user };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
-    console.warn('[CogniCare Firebase] Google Sign-In error:', errorMsg);
-    return { success: false, error: errorMsg };
+    const errorCode = (err as { code?: string })?.code;
+    console.warn('[CogniCare Firebase] Google Sign-In error:', errorCode, errorMsg);
+    return { success: false, error: errorMsg, code: errorCode };
   }
 };
 

@@ -103,8 +103,18 @@ export const LandingPage: React.FC = () => {
           isGoogleAuth: true,
         });
       } else {
-        // Helpful message if Google Provider is not yet toggled on in Firebase Console
-        setAuthNotice('Google sign-in popup closed or provider awaiting enable in Firebase Console. You can also use Authorized Demo mode below!');
+        const domain = window.location.hostname;
+        if (res.code === 'auth/unauthorized-domain') {
+          setAuthNotice(
+            `🔒 Domain "${domain}" is not yet added to Firebase Authorized Domains. To enable real Google accounts: Go to Firebase Console > Authentication > Settings > Authorized domains > Add "${domain}". Or use "Authorized Demo Access" below to enter immediately!`
+          );
+        } else if (res.code === 'auth/popup-blocked') {
+          setAuthNotice('Popup was blocked by your browser. Please allow popups for this site, or use Authorized Demo Access.');
+        } else if (res.code === 'auth/popup-closed-by-user') {
+          setAuthNotice('Google sign-in popup was closed. You can also use Authorized Demo Access below.');
+        } else {
+          setAuthNotice(res.error || 'Google sign-in is awaiting domain authorization. You can use Authorized Demo mode below!');
+        }
       }
     } catch {
       setAuthNotice('Google sign-in unavailable right now. Use Authorized Demo mode below.');
