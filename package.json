@@ -1,0 +1,27 @@
+{
+  "name": "cognicare-ner-workspace",
+  "version": "2.5.0",
+  "private": true,
+  "description": "CogniCare NER (স্মৃতি-সেতু) - Offline-First Multilingual AI Dementia Care Platform",
+  "scripts": {
+    "dev": "npm run dev --prefix apps/cognicare-app",
+    "build": "npm run build --prefix apps/cognicare-app",
+    "preview": "npm run preview --prefix apps/cognicare-app",
+    "lint": "npm run lint --prefix apps/cognicare-app",
+    "generate:pdf": "node apps/cognicare-app/scripts/generate_project_dossier_pdf.cjs",
+    "start": "npm run dev"
+  },
+  "keywords": [
+    "sih2026",
+    "dementia",
+    "geriatric",
+    "mci",
+    "northeast-india",
+    "offline-first",
+    "pwa",
+    "react19",
+    "typescript"
+  ],
+  "author": "CogniCare NER SIH 2026 Team",
+  "license": "UNLICENSED"
+}

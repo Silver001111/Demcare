@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "magic5644.graph-it-live",
+    "usernamehw.errorlens",
+    "deque-systems.vscode-axe-linter",
+    "qwtel.sqlite-viewer",
+    "rangav.vscode-thunder-client",
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "naumovs.color-highlight",
+    "yoavbls.pretty-ts-errors"
+  ]
+}
