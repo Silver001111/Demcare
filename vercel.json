@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm run build --prefix apps/cognicare-app",
+  "outputDirectory": "apps/cognicare-app/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
