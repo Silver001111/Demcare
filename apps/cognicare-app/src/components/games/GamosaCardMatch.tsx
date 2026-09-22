@@ -6,6 +6,8 @@ import { audioSpeech, LOCALIZED_STRINGS } from '../../services/audioSpeech';
 import { LanguageCode, GameSession, PatientProfile } from '../../types';
 import { t } from '../../translations';
 
+import { useAppStore } from '../../store/useAppStore';
+
 interface Props {
   patient: PatientProfile;
   lang: LanguageCode;
@@ -19,6 +21,8 @@ interface CardItem {
   name: string;
   state: string;
   icon: string;
+  imageUrl?: string;
+  audioVoiceNoteUrl?: string;
   color: string;
   flipped: boolean;
   matched: boolean;
@@ -36,6 +40,10 @@ const CULTURAL_CARDS = [
 ];
 
 export const GamosaCardMatch: React.FC<Props> = ({ patient, lang, onBack, onFinishSession }) => {
+  const { familyPhotos } = useAppStore();
+  const [deckMode, setDeckMode] = useState<'cultural' | 'family'>(
+    familyPhotos && familyPhotos.length >= 2 ? 'family' : 'cultural'
+  );
   const [difficulty, setDifficulty] = useState<number>(() => banditEngine.selectDifficulty());
   const [cards, setCards] = useState<CardItem[]>([]);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
@@ -46,29 +54,41 @@ export const GamosaCardMatch: React.FC<Props> = ({ patient, lang, onBack, onFini
   const [isProcessing, setIsProcessing] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
 
-  // Initialize board on load or difficulty change
+  // Initialize board on load, difficulty change, or mode change
   useEffect(() => {
-    initGame(difficulty);
-    // Voice narration of instructions
-    const introText = LOCALIZED_STRINGS.cardMatchIntro[lang] || LOCALIZED_STRINGS.cardMatchIntro.en;
+    initGame(difficulty, deckMode);
+    const introText = deckMode === 'family'
+      ? (lang === 'as' ? 'আপোনাৰ মৰমৰ পৰিয়ালৰ ফটোবোৰ মেচ কৰক।' : lang === 'hi' ? 'अपने परिवार के सदस्यों की तस्वीरों का मिलान करें।' : 'Match your beloved family members and joyful memories.')
+      : (LOCALIZED_STRINGS.cardMatchIntro[lang] || LOCALIZED_STRINGS.cardMatchIntro.en);
     audioSpeech.speak(introText, lang);
-  }, [difficulty]);
+  }, [difficulty, deckMode]);
 
-  const initGame = (lvl: number) => {
-    // Determine pair count based on adaptive difficulty (Level 1: 2 pairs, Level 2: 3 pairs, Level 3: 4 pairs, Level 4: 6 pairs)
+  const initGame = (lvl: number, mode: 'cultural' | 'family' = deckMode) => {
     const pairCount = lvl === 1 ? 2 : lvl === 2 ? 3 : lvl === 3 ? 4 : 6;
-    const selectedPatterns = CULTURAL_CARDS.slice(0, pairCount);
+    
+    let selectedPatterns: any[] = [];
+    if (mode === 'family' && familyPhotos && familyPhotos.length >= 2) {
+      const availableCount = Math.min(familyPhotos.length, pairCount);
+      selectedPatterns = familyPhotos.slice(0, availableCount).map((f) => ({
+        patternId: f.id,
+        name: f.personName,
+        state: f.relationship,
+        icon: '❤️',
+        imageUrl: f.photoUrl,
+        audioVoiceNoteUrl: f.audioVoiceNoteUrl,
+        color: 'bg-rose-50 border-rose-400 text-rose-900',
+      }));
+    } else {
+      selectedPatterns = CULTURAL_CARDS.slice(0, pairCount);
+    }
 
     const deck: CardItem[] = [];
     let idCounter = 1;
     selectedPatterns.forEach((p) => {
-      // First copy
       deck.push({ id: idCounter++, ...p, flipped: false, matched: false });
-      // Second copy
       deck.push({ id: idCounter++, ...p, flipped: false, matched: false });
     });
 
-    // Shuffle deck
     const shuffled = deck.sort(() => Math.random() - 0.5);
     setCards(shuffled);
     setSelectedIndices([]);
@@ -101,6 +121,23 @@ export const GamosaCardMatch: React.FC<Props> = ({ patient, lang, onBack, onFini
       if (firstCard.patternId === secondCard.patternId) {
         // MATCH FOUND!
         audioSpeech.playGentleChime('success');
+        if (firstCard.imageUrl) {
+          const matchSpeech = lang === 'as'
+            ? `বৰ ধুনীয়া! এয়া আপোনাৰ ${firstCard.name} (${firstCard.state})!`
+            : lang === 'hi'
+            ? `बहुत बढ़िया! ये हैं आपकी ${firstCard.name} (${firstCard.state})!`
+            : `Wonderful! That's ${firstCard.name}, your ${firstCard.state}!`;
+
+          if (firstCard.audioVoiceNoteUrl) {
+            // Play loved one's actual voice recording!
+            const lovedOneAudio = new Audio(firstCard.audioVoiceNoteUrl);
+            lovedOneAudio.play().catch(() => {
+              audioSpeech.speak(matchSpeech, lang);
+            });
+          } else {
+            audioSpeech.speak(matchSpeech, lang);
+          }
+        }
         setTimeout(() => {
           newCards[firstIdx].matched = true;
           newCards[secondIdx].matched = true;
@@ -154,7 +191,7 @@ export const GamosaCardMatch: React.FC<Props> = ({ patient, lang, onBack, onFini
       touchPrecision: 0.92,
     };
 
-    const previousScores = {
+    const previousScores = patient.domainScores || {
       memory: patient.compositeCognitiveScore,
       attention: patient.compositeCognitiveScore,
       executive: patient.compositeCognitiveScore,
@@ -196,6 +233,19 @@ export const GamosaCardMatch: React.FC<Props> = ({ patient, lang, onBack, onFini
           </button>
 
           <div className="flex items-center gap-2">
+            {familyPhotos && familyPhotos.length >= 2 && (
+              <button
+                onClick={() => setDeckMode(deckMode === 'family' ? 'cultural' : 'family')}
+                className={`btn-tactile px-3.5 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${
+                  deckMode === 'family'
+                    ? 'bg-rose-600 text-white border-rose-700 shadow-md'
+                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                }`}
+                title="Switch Deck Mode"
+              >
+                {deckMode === 'family' ? '❤️ Family Faces' : '🧣 Cultural Motifs'}
+              </button>
+            )}
             <span className="px-4 py-1.5 bg-ner-sand text-ner-bark font-bold rounded-full text-base border border-ner-earth/30">
               Level {difficulty} {difficulty <= 2 ? '🌱' : difficulty <= 4 ? '🌿' : '🌳'}
             </span>
@@ -212,10 +262,12 @@ export const GamosaCardMatch: React.FC<Props> = ({ patient, lang, onBack, onFini
         {/* Title & Instructions Banner */}
         <div className="bg-white border-2 border-ner-earth/20 rounded-2xl p-4 mb-6 shadow-card-warm gamosa-border">
           <h2 className="text-2xl md:text-3xl font-serif font-bold text-ner-bark mb-1">
-            {t('game1_title', lang)}
+            {deckMode === 'family' ? '❤️ Family Memory Match' : t('game1_title', lang)}
           </h2>
           <p className="text-lg text-ner-earth font-medium">
-            {LOCALIZED_STRINGS.cardMatchIntro[lang] || LOCALIZED_STRINGS.cardMatchIntro.en}
+            {deckMode === 'family'
+              ? (lang === 'as' ? 'আপোনাৰ পৰিয়ালৰ ফটোবোৰ মিলাই আনন্দ লওক।' : 'Match the smiling faces of your loved ones.')
+              : (LOCALIZED_STRINGS.cardMatchIntro[lang] || LOCALIZED_STRINGS.cardMatchIntro.en)}
           </p>
         </div>
       </div>
@@ -237,26 +289,34 @@ export const GamosaCardMatch: React.FC<Props> = ({ patient, lang, onBack, onFini
             key={card.id}
             onClick={() => handleCardClick(idx)}
             disabled={card.matched || isProcessing}
-            className={`h-28 md:h-36 rounded-2xl border-4 transition-all duration-300 flex flex-col items-center justify-center p-2 relative select-none ${
+            className={`h-32 md:h-40 rounded-2xl border-4 transition-all duration-300 flex flex-col items-center justify-center p-2 relative select-none ${
               card.matched
-                ? 'bg-ner-mint/70 border-ner-forest scale-95 opacity-90'
+                ? 'bg-emerald-50 border-emerald-600 scale-95 opacity-90'
                 : card.flipped
                 ? `${card.color} border-4 scale-100 shadow-md`
                 : 'bg-gradient-to-br from-[#8D6E63] to-[#5D4037] border-ner-bark shadow-tactile text-white hover:brightness-105'
             }`}
           >
             {card.flipped || card.matched ? (
-              <div className="flex flex-col items-center justify-center text-center animate-fadeIn">
-                <span className="text-4xl md:text-5xl mb-1">{card.icon}</span>
-                <span className="text-xs md:text-sm font-bold leading-tight px-1">{card.name}</span>
-                <span className="text-[10px] text-ner-earth font-semibold">{card.state}</span>
+              <div className="flex flex-col items-center justify-center text-center animate-fadeIn w-full px-1">
+                {card.imageUrl ? (
+                  <img
+                    src={card.imageUrl}
+                    alt={card.name}
+                    className="w-14 h-14 md:w-18 md:h-18 rounded-xl object-cover shadow-sm mb-1 border border-slate-200"
+                  />
+                ) : (
+                  <span className="text-4xl md:text-5xl mb-1">{card.icon}</span>
+                )}
+                <span className="text-xs md:text-sm font-bold leading-tight px-1 truncate w-full">{card.name}</span>
+                <span className="text-[10px] text-slate-600 font-semibold truncate w-full">{card.state}</span>
                 {card.matched && (
-                  <CheckCircle2 className="w-5 h-5 text-ner-forest absolute top-1.5 right-1.5" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 absolute top-1.5 right-1.5" />
                 )}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-white/80">
-                <span className="text-3xl md:text-4xl">🧣</span>
+                <span className="text-3xl md:text-4xl">{deckMode === 'family' ? '❤️' : '🧣'}</span>
                 <span className="text-xs font-bold mt-1 text-ner-gold">{t('touch_card', lang)}</span>
               </div>
             )}

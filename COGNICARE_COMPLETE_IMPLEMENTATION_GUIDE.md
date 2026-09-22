@@ -47,28 +47,33 @@ graph TB
         CD["CaregiverDashboard.tsx<br/>(Analytics + Alerts)"]
         AP["AshaScreeningPortal.tsx<br/>(Offline Screening)"]
         
-        subgraph "6 Cognitive Games"
+        subgraph "8 Cognitive Games & Clinical Tests"
             G1["GamosaCardMatch"]
             G2["BihuRhythmRecall"]
             G3["DailyRoutineSort"]
             G4["BambooPatternCompletion"]
             G5["MarketSpotDifference"]
             G6["WordAssociationFood"]
+            G7["ClockDrawingTest"]
+            G8["OlfactoryRecallKit"]
         end
         
-        subgraph "Patient Support"
+        subgraph "Patient Support & Safety"
             RA["ReminiscenceAlbum"]
-            SC["SundowningCalm"]
-            SOS["SafeHomeSOS"]
+            SC["SundowningCalm & Phototherapy"]
+            SOS["SafeHomeSOS & Geofence"]
+            BP["BlisterPackScanner"]
         end
     end
     
     subgraph "Services Layer"
         AI["aiEngine.ts<br/>(Thompson Sampling CMAB)"]
-        AS["audioSpeech.ts<br/>(TTS + Audio)"]
-        CS["cloudSync.ts<br/>(Firebase Stub)"]
-        VB["voiceBiomarker.ts<br/>(NEW — Speech Analysis)"]
-        NS["notificationService.ts<br/>(NEW — Med Reminders)"]
+        AS["audioSpeech.ts<br/>(TTS + Web Audio)"]
+        CS["cloudSync.ts<br/>(Firebase Cloud Firestore)"]
+        VB["voiceBiomarker.ts<br/>(Speech Biomarkers)"]
+        NS["notificationService.ts<br/>(Med Reminders)"]
+        DP["dialectParser.ts<br/>(Dialect NLP)"]
+        GF["geofenceService.ts<br/>(Haversine GPS)"]
     end
     
     subgraph "State Management"
@@ -76,18 +81,19 @@ graph TB
     end
     
     subgraph "Data Layer"
-        LS["localStorage<br/>(Bandit Priors)"]
-        IDB["IndexedDB<br/>(NEW — Offline Queue)"]
-        FB["Firebase Firestore<br/>(Cloud Sync)"]
+        LS["localStorage<br/>(Bandit Priors & Offline State)"]
+        IDB["IndexedDB<br/>(Offline PWA Cache)"]
+        FB["Firebase Firestore<br/>(Live demcare-95abc Sync)"]
     end
     
     LP --> PH
     LP --> CD
     LP --> AP
-    PH --> G1 & G2 & G3 & G4 & G5 & G6
-    PH --> RA & SC & SOS
-    G1 & G2 & G3 & G4 & G5 & G6 --> AI
-    G6 --> VB
+    PH --> G1 & G2 & G3 & G4 & G5 & G6 & G7 & G8
+    PH --> RA & SC & SOS & BP
+    G1 & G2 & G3 & G4 & G5 & G6 & G7 & G8 --> AI
+    G6 --> VB & DP
+    SOS --> GF
     PH --> NS
     AI --> ZS
     ZS --> LS

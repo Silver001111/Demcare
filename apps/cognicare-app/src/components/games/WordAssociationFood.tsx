@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ArrowLeft, Volume2, Sparkles, RotateCcw, Mic, Square, Activity, HelpCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { banditEngine, calculateCognitiveScore } from '../../services/aiEngine';
@@ -23,15 +23,91 @@ interface WordOption {
   conceptKey?: string;
 }
 
+// Vocabulary sets
+const VOCAB = [
+  { 
+    conceptKey: 'TEA',
+    target: { en: 'Tea Garden', as: 'চাহ বাগিচা', hi: 'चाय बागान', emoji: '🌱' }, 
+    match: { en: 'Tea Leaves', as: 'চাহ পাত', hi: 'চाय की पत्ती' },
+    distractors: [
+      { en: 'Rice', as: 'চাউল', hi: 'चावल' },
+      { en: 'Fish', as: 'মাছ', hi: 'मछली' },
+      { en: 'Bamboo', as: 'বাঁহ', hi: 'बांस' },
+      { en: 'Silk', as: 'পাট', hi: 'रेशम' }
+    ]
+  },
+  { 
+    conceptKey: 'RICE_MEAL',
+    target: { en: 'Bihu Festival', as: 'বিহু উৎসৱ', hi: 'बिहू त्योहार', emoji: '🥁' }, 
+    match: { en: 'Pitha (Sweet)', as: 'পিঠা', hi: 'पीठा' },
+    distractors: [
+      { en: 'Rain', as: 'বৰষুণ', hi: 'बारिश' },
+      { en: 'Mountain', as: 'পাহাৰ', hi: 'पहाड़' },
+      { en: 'Book', as: 'কিতাপ', hi: 'किताब' },
+      { en: 'Medicine', as: 'দৰৱ', hi: 'दवा' }
+    ]
+  },
+  { 
+    conceptKey: 'RIVER',
+    target: { en: 'River Brahmaputra', as: 'ব্ৰহ্মপুত্ৰ নদী', hi: 'ब्रह्मপুত্র নদী', emoji: '🌊' }, 
+    match: { en: 'Boat', as: 'নাও', hi: 'नाव' },
+    distractors: [
+      { en: 'Car', as: 'গাড়ী', hi: 'कार' },
+      { en: 'Fire', as: 'জুই', hi: 'आग' },
+      { en: 'Star', as: 'তৰা', hi: 'तारा' },
+      { en: 'Forest', as: 'হাবি', hi: 'जंगल' }
+    ]
+  },
+  { 
+    conceptKey: 'GAMOSA',
+    target: { en: 'Assam Silk', as: 'অসমৰ পাট মুগা', hi: 'असम रेशम', emoji: '🧵' }, 
+    match: { en: 'Mekhela Sador', as: 'মেখেলা চাদৰ', hi: 'मेखेला चादर' },
+    distractors: [
+      { en: 'Shoes', as: 'জোতা', hi: 'जूते' },
+      { en: 'Umbrella', as: 'ছাতি', hi: 'छाता' },
+      { en: 'Plate', as: 'কাঁহী', hi: 'थाली' },
+      { en: 'Chair', as: 'চকী', hi: 'कुर्सी' }
+    ]
+  }
+];
+
+function generateWordRound(lvl: number, lang: string) {
+  const vocabItem = VOCAB[Math.floor(Math.random() * VOCAB.length)];
+  const targetWord = vocabItem.target[lang as keyof typeof vocabItem.target] || vocabItem.target.en;
+  const targetEmoji = vocabItem.target.emoji;
+  const correctWord = vocabItem.match[lang as keyof typeof vocabItem.match] || vocabItem.match.en;
+
+  let newOptions: WordOption[] = [
+    { id: 'opt_correct', text: correctWord, isCorrect: true, conceptKey: vocabItem.conceptKey },
+  ];
+  
+  const numOptions = lvl <= 2 ? 2 : lvl <= 4 ? 3 : 4;
+  const shuffledDistractors = [...vocabItem.distractors].sort(() => 0.5 - Math.random());
+  
+  for (let i = 0; i < numOptions - 1; i++) {
+    const distractorWord = shuffledDistractors[i][lang as keyof typeof shuffledDistractors[0]] || shuffledDistractors[i].en;
+    newOptions.push({ id: `dist_${i}`, text: distractorWord, isCorrect: false });
+  }
+  
+  newOptions = newOptions.sort(() => 0.5 - Math.random());
+  return {
+    conceptKey: vocabItem.conceptKey,
+    targetWord,
+    targetEmoji,
+    options: newOptions,
+  };
+}
+
 export const WordAssociationFood: React.FC<Props> = ({ patient, lang, onBack, onFinishSession }) => {
-  const [difficulty, setDifficulty] = useState<number>(() => banditEngine.selectDifficulty());
-  const [targetWord, setTargetWord] = useState('');
-  const [targetEmoji, setTargetEmoji] = useState('');
-  const [options, setOptions] = useState<WordOption[]>([]);
+  const [difficulty] = useState<number>(() => banditEngine.selectDifficulty());
+  const [initialRound] = useState(() => generateWordRound(difficulty, lang));
+  const [targetWord, setTargetWord] = useState(initialRound.targetWord);
+  const [targetEmoji, setTargetEmoji] = useState(initialRound.targetEmoji);
+  const [options, setOptions] = useState<WordOption[]>(initialRound.options);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [startTime, setStartTime] = useState<number>(Date.now());
+  const [startTime, setStartTime] = useState<number>(() => Date.now());
   const [hintsUsed, setHintsUsed] = useState(0);
   const [hintActiveId, setHintActiveId] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -47,101 +123,34 @@ export const WordAssociationFood: React.FC<Props> = ({ patient, lang, onBack, on
   const animFrameRef = useRef<number | null>(null);
 
   // Dialect Code-Mixing NLP State
-  const [currentConcept, setCurrentConcept] = useState<string>('TEA');
+  const [currentConcept, setCurrentConcept] = useState<string>(initialRound.conceptKey);
   const [dialectResult, setDialectResult] = useState<DialectMatchResult | null>(null);
   const [spokenInputText, setSpokenInputText] = useState<string>('');
 
-  // Vocabulary sets
-  const VOCAB = [
-    { 
-      conceptKey: 'TEA',
-      target: { en: 'Tea Garden', as: 'চাহ বাগিচা', hi: 'चाय बागान', emoji: '🌱' }, 
-      match: { en: 'Tea Leaves', as: 'চাহ পাত', hi: 'चाय की पत्ती' },
-      distractors: [
-        { en: 'Rice', as: 'চাউল', hi: 'चावल' },
-        { en: 'Fish', as: 'মাছ', hi: 'मछली' },
-        { en: 'Bamboo', as: 'বাঁহ', hi: 'बांस' },
-        { en: 'Silk', as: 'পাট', hi: 'रेशम' }
-      ]
-    },
-    { 
-      conceptKey: 'RICE_MEAL',
-      target: { en: 'Bihu Festival', as: 'বিহু উৎসৱ', hi: 'बिहू त्योहार', emoji: '🥁' }, 
-      match: { en: 'Pitha (Sweet)', as: 'পিঠা', hi: 'पीठा' },
-      distractors: [
-        { en: 'Rain', as: 'বৰষুণ', hi: 'बारिश' },
-        { en: 'Mountain', as: 'পাহাৰ', hi: 'पहाड़' },
-        { en: 'Book', as: 'কিতাপ', hi: 'किताब' },
-        { en: 'Medicine', as: 'দৰৱ', hi: 'दवा' }
-      ]
-    },
-    { 
-      conceptKey: 'RIVER',
-      target: { en: 'River Brahmaputra', as: 'ব্ৰহ্মপুত্ৰ নদী', hi: 'ब्रह्मপুত্র নদী', emoji: '🌊' }, 
-      match: { en: 'Boat', as: 'নাও', hi: 'नाव' },
-      distractors: [
-        { en: 'Car', as: 'গাড়ী', hi: 'कार' },
-        { en: 'Fire', as: 'জুই', hi: 'आग' },
-        { en: 'Star', as: 'তৰা', hi: 'तारा' },
-        { en: 'Forest', as: 'হাবি', hi: 'जंगल' }
-      ]
-    },
-    { 
-      conceptKey: 'GAMOSA',
-      target: { en: 'Assam Silk', as: 'অসমৰ পাট মুগা', hi: 'असम रेशम', emoji: '🧵' }, 
-      match: { en: 'Mekhela Sador', as: 'মেখেলা চাদৰ', hi: 'मेखेला चादर' },
-      distractors: [
-        { en: 'Shoes', as: 'জোতা', hi: 'जूते' },
-        { en: 'Umbrella', as: 'ছাতি', hi: 'छाता' },
-        { en: 'Plate', as: 'কাঁহী', hi: 'थाली' },
-        { en: 'Chair', as: 'চকী', hi: 'कुर्सी' }
-      ]
-    }
-  ];
+  const initGame = useCallback((lvl: number) => {
+    const round = generateWordRound(lvl, lang);
+    setCurrentConcept(round.conceptKey);
+    setTargetWord(round.targetWord);
+    setTargetEmoji(round.targetEmoji);
+    setOptions(round.options);
+    setDialectResult(null);
+    setSpokenInputText('');
+    setAttempts(0);
+    setIsCompleted(false);
+    setSelectedOption(null);
+    setHintsUsed(0);
+    setHintActiveId(null);
+    setStartTime(Date.now());
+    setDetectedPauses(0);
+    setLatestBiomarkers(null);
+  }, [lang]);
 
   useEffect(() => {
-    initGame(difficulty);
     const introText = lang === 'as' 
       ? 'ওপৰৰ শব্দটোৰ লগত মিলা শব্দটো বাছক।' 
       : 'Select the word that is related to the top word.';
     audioSpeech.speak(introText, lang);
-  }, [difficulty]);
-
-  const initGame = (lvl: number) => {
-    const vocabItem = VOCAB[Math.floor(Math.random() * VOCAB.length)];
-    setCurrentConcept(vocabItem.conceptKey);
-    setDialectResult(null);
-    setSpokenInputText('');
-    
-    // Fallback to English if language string is missing for some reason
-    setTargetWord(vocabItem.target[lang as keyof typeof vocabItem.target] || vocabItem.target.en);
-    setTargetEmoji(vocabItem.target.emoji);
-    
-    const correctWord = vocabItem.match[lang as keyof typeof vocabItem.match] || vocabItem.match.en;
-
-    let newOptions: WordOption[] = [
-      { id: 'opt_correct', text: correctWord, isCorrect: true, conceptKey: vocabItem.conceptKey },
-    ];
-    
-    // Difficulty determines number of options (2 to 4)
-    const numOptions = lvl <= 2 ? 2 : lvl <= 4 ? 3 : 4;
-    const shuffledDistractors = [...vocabItem.distractors].sort(() => 0.5 - Math.random());
-    
-    for (let i = 0; i < numOptions - 1; i++) {
-        const distractorWord = shuffledDistractors[i][lang as keyof typeof shuffledDistractors[0]] || shuffledDistractors[i].en;
-        newOptions.push({ id: `dist_${i}`, text: distractorWord, isCorrect: false });
-    }
-    
-    newOptions = newOptions.sort(() => 0.5 - Math.random());
-    setOptions(newOptions);
-    
-    setAttempts(0);
-    setIsCompleted(false);
-    setSelectedOption(null);
-    setStartTime(Date.now());
-    setDetectedPauses(0);
-    setLatestBiomarkers(null);
-  };
+  }, [lang]);
 
   useEffect(() => {
     return () => {
@@ -281,7 +290,7 @@ export const WordAssociationFood: React.FC<Props> = ({ patient, lang, onBack, on
     }
   };
 
-  const handleGameComplete = (finalAttempts: number) => {
+  const handleGameComplete = useCallback((finalAttempts: number) => {
     setIsCompleted(true);
     confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
 
@@ -309,7 +318,7 @@ export const WordAssociationFood: React.FC<Props> = ({ patient, lang, onBack, on
         : 0.85,
     };
 
-    const previousScores = {
+    const previousScores = patient.domainScores || {
       memory: patient.compositeCognitiveScore,
       attention: patient.compositeCognitiveScore,
       executive: patient.compositeCognitiveScore,
@@ -343,7 +352,7 @@ export const WordAssociationFood: React.FC<Props> = ({ patient, lang, onBack, on
     };
 
     onFinishSession(session);
-  };
+  }, [difficulty, hintsUsed, lang, latestBiomarkers, detectedPauses, onFinishSession, patient.compositeCognitiveScore, patient.domainScores, patient.id, startTime]);
 
   return (
     <div className="max-w-2xl mx-auto p-4 md:p-6 bg-ner-cream min-h-[85vh] flex flex-col justify-between">

@@ -52,8 +52,7 @@ export const BihuRhythmRecall: React.FC<Props> = ({ patient, lang, onBack, onFin
 
   const playInstrumentSound = (freq: number) => {
     try {
-      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      const ctx = new AudioContextClass();
+      const ctx = audioSpeech.getAudioContext();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'triangle';
@@ -151,7 +150,7 @@ export const BihuRhythmRecall: React.FC<Props> = ({ patient, lang, onBack, onFin
       touchPrecision: 0.95,
     };
 
-    const previousScores = {
+    const previousScores = patient.domainScores || {
       memory: patient.compositeCognitiveScore,
       attention: patient.compositeCognitiveScore,
       executive: patient.compositeCognitiveScore,

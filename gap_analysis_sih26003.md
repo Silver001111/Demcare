@@ -50,8 +50,7 @@
 | **Frontend Framework** | ✅ | React + Vite + TailwindCSS. Fast and responsive. |
 | **Offline Capabilities** | ✅ | `vite-plugin-pwa` installed and configured for ASHA workers in low-connectivity areas. |
 | **Analytics Visualization** | ✅ | `recharts` implemented for Caregiver Radar and Line telemetry graphs. |
-| **State Management** | ✅ | Zustand implemented for lightweight, scalable global state. |
-| **Database & Auth** | ⚠️ | **GAP:** Currently using mock data and local state. Requires Firebase or Supabase backend for persistent cloud storage and real-time syncing. |
+| **Database & Auth** | ✅ | **RESOLVED:** Google Cloud Firestore v12 (`demcare-95abc`) integrated with offline persistence caching, real-time profile/session sync, and local Zustand/LocalStorage fallback. |
 | **Native Mobile App** | ⚠️ | **GAP:** Currently a web-based PWA. For deeper device integrations (like native alarms, accelerometer data for tremors), a Flutter or React Native wrapper is recommended. |
 
 ---

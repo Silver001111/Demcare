@@ -60,6 +60,7 @@ const MOCK_PATIENT: PatientProfile = {
   ashaWorkerPhone: '+91 98640 54321',
   emergencyContact: '+91 94350 12345',
   photoUrl: '/images/lakhimi_baruah.jpg',
+  abhaId: '14-8832-1920-4411',
 };
 
 const containerVariants = {
@@ -80,14 +81,14 @@ const itemVariants = {
 };
 
 export const LandingPage: React.FC = () => {
-  const { login, language, setLanguage } = useAppStore();
+  const { login, language, setLanguage, activePatient } = useAppStore();
   const [selectedRole, setSelectedRole] = useState<'patient' | 'caregiver' | 'asha' | null>(null);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [authNotice, setAuthNotice] = useState<string | null>(null);
 
   const handlePatientLogin = () => {
-    login('patient', MOCK_PATIENT, null);
+    login('patient', activePatient || MOCK_PATIENT, null);
   };
 
   const handleGoogleLogin = async (role: 'caregiver' | 'asha') => {
@@ -96,7 +97,7 @@ export const LandingPage: React.FC = () => {
     try {
       const res = await signInWithGoogle();
       if (res.success && res.user) {
-        login(role, MOCK_PATIENT, {
+        login(role, activePatient || MOCK_PATIENT, {
           email: res.user.email,
           displayName: res.user.displayName,
           photoURL: res.user.photoURL,
@@ -124,7 +125,7 @@ export const LandingPage: React.FC = () => {
   };
 
   const handleDemoAuthorizedLogin = (role: 'caregiver' | 'asha') => {
-    login(role, MOCK_PATIENT, {
+    login(role, activePatient || MOCK_PATIENT, {
       email: role === 'caregiver' ? 'moushumi.care@cognicare.ner' : 'purnima.asha@nhm.assam.gov.in',
       displayName: role === 'caregiver' ? 'Moushumi Baruah' : 'Purnima Gogoi (ASHA)',
       photoURL: null,

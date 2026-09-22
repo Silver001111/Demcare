@@ -1,6 +1,18 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { LanguageCode, PatientProfile, GameSession, ReminderItem, AshaObservation, AlertNotification, CognitiveDomainScores } from '../types';
+import { 
+  LanguageCode, 
+  PatientProfile, 
+  GameSession, 
+  ReminderItem, 
+  AshaObservation, 
+  AlertNotification, 
+  CognitiveDomainScores,
+  ThemeMode,
+  FamilyMemoryPhoto,
+  MemoryGardenState,
+  DailyRoutineItem,
+} from '../types';
 import { 
   saveSessionToCloud, 
   saveObservationToCloud, 
@@ -63,6 +75,13 @@ export const INITIAL_PATIENT: PatientProfile = {
   emergencyContact: '+91 94350 12345',
   photoUrl: '/images/lakhimi_baruah.jpg',
   abhaId: '14-8832-1920-4411',
+  domainScores: {
+    memory: 74,
+    attention: 78,
+    executive: 70,
+    visuospatial: 75,
+    language: 82,
+  },
 };
 
 export interface CustomBranding {
@@ -209,6 +228,224 @@ export const INITIAL_REMINDERS: ReminderItem[] = [
     completed: false,
     repeat: 'Daily',
   },
+  {
+    id: 'rem_4',
+    type: 'appointment',
+    title: {
+      en: 'Dr. Sarma Neuro-Cognitive Review',
+      as: 'ডাঃ শৰ্মাৰ লগত পৰামৰ্শ (তেজপুৰ)',
+      hi: 'डॉ. शर्मा न्यूरोलॉजिस्ट परामर्श',
+      bn: 'ডাঃ শর্মার সাথে স্বাস্থ্য পরীক্ষা',
+      mni: 'দোক্তরগা উনবা মতম',
+      brx: 'डाक्टरनि थावनि',
+      kha: 'Ka jingshait bad u Doctor',
+      lus: 'Doctor inentir hun',
+      trp: 'Doctor no nuhna',
+      ne: 'डाक्टरसँग परामर्श',
+    },
+    time: '11:00 AM',
+    dosage: {
+      en: 'Tezpur Memory Clinic • Room 14 (With Daughter Moushumi)',
+      as: 'তেজপুৰ কেন্দ্ৰীয় হাস্পতাল • ১৪ নং কোঠা',
+      hi: 'तेजपुर स्मृति क्लिनिक • कमरा 14',
+      bn: 'তেজপুর স্মৃতি ক্লিনিক • রুম ১৪',
+      mni: 'তেজপুর মেমোরী ক্লিনিক',
+      brx: 'तेजपुर क्लिनिक',
+      kha: 'Tezpur Clinic',
+      lus: 'Tezpur Damdawi In',
+      trp: 'Tezpur Hospital',
+      ne: 'तेजपुर मेमोरी क्लिनिक',
+    },
+    spokenPrompt: {
+      en: 'Reminder: Doctor appointment today at 11:00 AM with Dr. Sarma.',
+      as: 'মনত পেলাই দিছোঁ: আজি দিনৰ ১১ বজাত ডাঃ শৰ্মাৰ লগত আপোনাৰ পৰামৰ্শ আছে।',
+      hi: 'याद दिलाएं: आज सुबह 11 बजे डॉ. शर्मा से मिलने का समय है।',
+      bn: 'মনে করিয়ে দিচ্ছি: আজ বেলা ১১ টায় ডাঃ শর্মার সাথে দেখা করার সময়।',
+      mni: 'ঙসি পুং ১১ দা দোক্তরগা উনবা লৈরে।',
+      brx: 'दिनैनि ११ तायाव डाक्टरजों लोगो हमनांगौ दं।',
+      kha: 'Kynmaw: Ka jingiakynduh bad u Doctor 11:00 AM.',
+      lus: 'Vawiin chawhma dar 11 ah Doctor inentir tur a ni.',
+      trp: 'Doctor bai malainani 11:00 AM.',
+      ne: 'याद राख्नुहोस्: आज बिहान ११ बजे डाक्टरसँग भेट्ने समय छ।',
+    },
+    completed: false,
+    repeat: 'Today',
+  },
+  {
+    id: 'rem_5',
+    type: 'meal',
+    title: {
+      en: 'Nutritious Green Lunch & Seasonal Fruits',
+      as: 'পুষ্টিকৰ দুপৰীয়াৰ আহাৰ আৰু ফল-মূল',
+      hi: 'पौष्टिक दोपहर का भोजन और ताजे फल',
+      bn: 'পুষ্টিকর দুপুরের আহার ও ফল',
+      mni: 'নুংথিলগী পুষ্টিকর চারোন',
+      brx: 'सान्झानि समायना जामुं',
+      kha: 'Ka ja kynthei bad soh',
+      lus: 'Chhun chaw ṭha leh themtê',
+      trp: 'Salni bwrwi chahmung',
+      ne: 'पौष्टिक दिउँसोको खाना र ताजा फलफूल',
+    },
+    time: '01:00 PM',
+    dosage: {
+      en: 'Steamed rice, green leafy saag, lentils & fresh papaya',
+      as: 'ভাত, টেঙা ঝুল, লাই শাক আৰু অমিতা',
+      hi: 'चावल, हरी साग, दाल और ताज़ा पपीता',
+      bn: 'ভাত, শাক, ডাল এবং পাকা পেঁপে',
+      mni: 'চেং, মহিং, অমসুং উ-হৈ',
+      brx: 'मैगं दै, अखां आरो जामुं',
+      kha: 'Ka ja, jhur bad soh',
+      lus: 'Chaw, anhnah leh theite',
+      trp: 'Mairong, mosla, swkwrwi',
+      ne: 'भात, हरियो साग, दाल र मेवा',
+    },
+    spokenPrompt: {
+      en: 'Time for your healthy, wholesome midday lunch and seasonal fresh fruits.',
+      as: 'দুপৰীয়াৰ পুষ্টিকৰ শাক-পাচলি আৰু ফল খোৱাৰ সময় হ’ল।',
+      hi: 'दोपहर के ताजे पौष्टिक भोजन का समय हो गया है।',
+      bn: 'দুপুরের স্বাস্থ্যকর পুষ্টিকর আহারের সময় হয়েছে।',
+      mni: 'নুংথিলগী চারোন চাবগী মতম ওইরে।',
+      brx: 'सान्झानि जामुं जानाय सम जाबाय।',
+      kha: 'Ka por ban bam ja kynthei.',
+      lus: 'Chhun chaw ei a hun ta.',
+      trp: 'Salni chahmung chani sal paikha.',
+      ne: 'दिउँसोको पौष्टिक खाना खाने समय भयो।',
+    },
+    completed: false,
+    repeat: 'Daily',
+  },
+];
+
+export const INITIAL_FAMILY_PHOTOS: FamilyMemoryPhoto[] = [
+  {
+    id: 'fam_1',
+    photoUrl: '/images/lakhimi_baruah.jpg',
+    personName: 'Ananya Baruah',
+    relationship: 'Granddaughter',
+    yearOrOccasion: 'School Science Fair 2024',
+    notes: 'Ananya won the first prize in robotics. Lakhimi blessed her with a silk Gamosa.',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'fam_2',
+    photoUrl: '/images/caregiver_mouchumi.jpg',
+    personName: 'Moushumi Baruah',
+    relationship: 'Daughter-in-law & Primary Caregiver',
+    yearOrOccasion: 'Bihu Kitchen Festival',
+    notes: 'Preparing fresh Pitha and Laroo together in the Tezpur courtyard.',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'fam_3',
+    photoUrl: '/images/koka_elder.jpg',
+    personName: 'Bhaben Baruah (Koka)',
+    relationship: 'Beloved Late Husband',
+    yearOrOccasion: 'Ancestral Home Garden, 1978',
+    notes: 'Planting tea bushes and Kopou orchids together by the pond.',
+    createdAt: new Date().toISOString(),
+  },
+];
+
+export const INITIAL_GARDEN_STATE: MemoryGardenState = {
+  flowersGrown: 3,
+  flowersBloomed: 2,
+  plantsUnlocked: ['kopou_orchid', 'brahmaputra_lotus', 'assam_tea'],
+  waterCountToday: 1,
+  lastUpdated: new Date().toISOString(),
+};
+
+export const INITIAL_DAILY_ROUTINE: DailyRoutineItem[] = [
+  {
+    id: 'rout_1',
+    timeSlot: 'morning',
+    title: {
+      en: 'Morning Wash & Warm Herbal Tea',
+      as: 'পুৱাৰ মুখ-হাত ধোৱা আৰু গৰম চাহ',
+      hi: 'सुबह का स्नान और गरम चाय',
+      bn: 'সকালের হাত-মুখ ধোয়া ও চা',
+    },
+    icon: '🌅',
+    defaultTime: '07:00 AM',
+    completed: true,
+  },
+  {
+    id: 'rout_2',
+    timeSlot: 'morning',
+    title: {
+      en: 'Blood Pressure Medication',
+      as: 'প্ৰেছাৰৰ টেবলেট খোৱা',
+      hi: 'ब्लड प्रेशर की दवा लेना',
+      bn: 'প্রেসারের ওষুধ খাওয়া',
+    },
+    icon: '💊',
+    defaultTime: '08:30 AM',
+    completed: true,
+  },
+  {
+    id: 'rout_3',
+    timeSlot: 'breakfast',
+    title: {
+      en: 'Wholesome Breakfast & Boiled Egg / Dal',
+      as: 'পুষ্টিকৰ ৰাতিপুৱাৰ আহাৰ (ৰুটি/ডালি)',
+      hi: 'पौष्टिक नाश्ता (दलिया/अंडा)',
+      bn: 'স্বাস্থ্যকর প্রাতরাশ',
+    },
+    icon: '🥣',
+    defaultTime: '09:00 AM',
+    completed: false,
+  },
+  {
+    id: 'rout_4',
+    timeSlot: 'exercise',
+    title: {
+      en: 'Gentle Garden Stretches & Breathing',
+      as: 'চোতালত মৃদু খোজ আৰু উশাহৰ ব্যায়াম',
+      hi: 'आंगन में हल्की सैर और प्राणायाम',
+      bn: 'হালকা স্ট্রেচিং ও শ্বাস-প্রশ্বাস',
+    },
+    icon: '🧘',
+    defaultTime: '10:00 AM',
+    completed: false,
+  },
+  {
+    id: 'rout_5',
+    timeSlot: 'game',
+    title: {
+      en: 'Daily Cognitive Workout (Memory Match)',
+      as: 'দৈনিক স্মৃতি খেল (গামোচা মেচ)',
+      hi: 'दैनिक मस्तिष्क खेल (मेमोरी मैच)',
+      bn: 'দৈনিক ব্রেন গেম',
+    },
+    icon: '🧠',
+    defaultTime: '11:30 AM',
+    completed: false,
+  },
+  {
+    id: 'rout_6',
+    timeSlot: 'rest',
+    title: {
+      en: 'Nutritious Lunch & Quiet Rest',
+      as: 'দুপৰীয়াৰ ভাত আৰু শান্ত বিশ্ৰাম',
+      hi: 'दोपहर का भोजन और आराम',
+      bn: 'দুপুরের ভাত ও বিশ্রাম',
+    },
+    icon: '😴',
+    defaultTime: '01:30 PM',
+    completed: false,
+  },
+  {
+    id: 'rout_7',
+    timeSlot: 'evening',
+    title: {
+      en: 'Evening Calming Music & Family Chat',
+      as: 'সন্ধ্যাৰ শান্ত সংগীত আৰু পৰিয়ালৰ কথা-বতৰা',
+      hi: 'शाम का शांत संगीत और परिवार से बात',
+      bn: 'সন্ধ্যার শান্ত সঙ্গীত ও পরিবারের সঙ্গ',
+    },
+    icon: '🌙',
+    defaultTime: '05:30 PM',
+    completed: false,
+  },
 ];
 
 export const INITIAL_ALERTS: AlertNotification[] = [
@@ -235,14 +472,32 @@ interface AppState {
     isGoogleAuth: boolean;
   } | null;
 
-  // Language Preference
+  // Language & Theme Preference
   language: LanguageCode;
+  themeMode: ThemeMode;
+  setThemeMode: (mode: ThemeMode) => void;
 
   // Longitudinal Data
   sessions: GameSession[];
   reminders: ReminderItem[];
   observations: AshaObservation[];
   alerts: AlertNotification[];
+
+  // Family Photo Memories
+  familyPhotos: FamilyMemoryPhoto[];
+  addFamilyPhoto: (photo: Omit<FamilyMemoryPhoto, 'id' | 'createdAt'>) => void;
+  deleteFamilyPhoto: (id: string) => void;
+
+  // Memory Garden Gamification
+  gardenState: MemoryGardenState;
+  growFlower: () => void;
+  bloomFlower: () => void;
+  unlockPlant: (plantKey: string) => void;
+  waterGarden: () => void;
+
+  // Daily Routine Rhythm
+  dailyRoutine: DailyRoutineItem[];
+  toggleDailyRoutineItem: (id: string) => void;
 
   // Actions
   login: (
@@ -279,17 +534,102 @@ export const useAppStore = create<AppState>()(
       activePatient: INITIAL_PATIENT,
       authUser: null,
       language: 'en',
+      themeMode: 'pastel',
       sessions: [],
       reminders: INITIAL_REMINDERS,
       observations: [],
       alerts: INITIAL_ALERTS,
       customBranding: INITIAL_BRANDING,
+      familyPhotos: INITIAL_FAMILY_PHOTOS,
+      gardenState: INITIAL_GARDEN_STATE,
+      dailyRoutine: INITIAL_DAILY_ROUTINE,
 
-      // Actions
+      // Theme toggle
+      setThemeMode: (mode) => set({ themeMode: mode }),
+
+      // Family Photos
+      addFamilyPhoto: (photo) => set((state) => ({
+        familyPhotos: [
+          {
+            id: `fam_${Date.now()}`,
+            ...photo,
+            createdAt: new Date().toISOString(),
+          },
+          ...state.familyPhotos,
+        ],
+      })),
+
+      deleteFamilyPhoto: (id) => set((state) => ({
+        familyPhotos: state.familyPhotos.filter((f) => f.id !== id),
+      })),
+
+      // Memory Garden Actions
+      growFlower: () => set((state) => ({
+        gardenState: {
+          ...state.gardenState,
+          flowersGrown: state.gardenState.flowersGrown + 1,
+          lastUpdated: new Date().toISOString(),
+        },
+      })),
+
+      bloomFlower: () => set((state) => ({
+        gardenState: {
+          ...state.gardenState,
+          flowersBloomed: state.gardenState.flowersBloomed + 1,
+          lastUpdated: new Date().toISOString(),
+        },
+      })),
+
+      unlockPlant: (plantKey) => set((state) => ({
+        gardenState: {
+          ...state.gardenState,
+          plantsUnlocked: state.gardenState.plantsUnlocked.includes(plantKey)
+            ? state.gardenState.plantsUnlocked
+            : [...state.gardenState.plantsUnlocked, plantKey],
+          lastUpdated: new Date().toISOString(),
+        },
+      })),
+
+      waterGarden: () => set((state) => ({
+        gardenState: {
+          ...state.gardenState,
+          waterCountToday: (state.gardenState.waterCountToday || 0) + 1,
+          flowersBloomed: state.gardenState.flowersBloomed + 1,
+          lastUpdated: new Date().toISOString(),
+        },
+      })),
+
+      // Daily Routine Toggle
+      toggleDailyRoutineItem: (id) => set((state) => {
+        let justCompleted = false;
+        const updated = state.dailyRoutine.map((item) => {
+          if (item.id === id) {
+            if (!item.completed) justCompleted = true;
+            return { ...item, completed: !item.completed };
+          }
+          return item;
+        });
+
+        const newGardenState = justCompleted
+          ? {
+              ...state.gardenState,
+              flowersBloomed: state.gardenState.flowersBloomed + 1,
+              waterCountToday: (state.gardenState.waterCountToday || 0) + 1,
+              lastUpdated: new Date().toISOString(),
+            }
+          : state.gardenState;
+
+        return {
+          dailyRoutine: updated,
+          gardenState: newGardenState,
+        };
+      }),
+
+      // Auth & Role Actions
       login: (role, patient, authUser = null) => set({ 
         isAuthenticated: true, 
         userRole: role, 
-        activePatient: patient || get().activePatient || INITIAL_PATIENT,
+        activePatient: get().activePatient || patient || INITIAL_PATIENT,
         authUser: authUser || null,
       }),
       
@@ -308,32 +648,40 @@ export const useAppStore = create<AppState>()(
         savePatientProfileToCloud(patient).catch(console.warn);
       },
 
-      updatePatientScores: (compositeScore, _domainScores) => set((state) => {
-        if (!state.activePatient) return state;
+      updatePatientScores: (compositeScore, domainScores) => {
+        const state = get();
+        if (!state.activePatient) return;
 
         const today = new Date().toDateString();
-        // sessions are stored newest-first, so index 0 is the most recent
-        const lastSession = state.sessions[0];
-        const lastSessionDate = lastSession
-          ? new Date(lastSession.timestamp).toDateString()
+        const priorSession = state.sessions[1];
+        const priorSessionDate = priorSession
+          ? new Date(priorSession.timestamp).toDateString()
           : null;
 
-        // Only increment streak if this is the first game completed on a new calendar day
-        const isNewDay = lastSessionDate !== today;
+        const isNewDay = priorSessionDate !== today;
 
-        return {
-          activePatient: {
-            ...state.activePatient,
-            compositeCognitiveScore: compositeScore,
-            streakDays: isNewDay
-              ? state.activePatient.streakDays + 1
-              : state.activePatient.streakDays,
-          }
+        const updatedPatient: PatientProfile = {
+          ...state.activePatient,
+          compositeCognitiveScore: compositeScore,
+          domainScores: domainScores || state.activePatient.domainScores,
+          streakDays: isNewDay
+            ? state.activePatient.streakDays + 1
+            : state.activePatient.streakDays,
         };
-      }),
+
+        set({ activePatient: updatedPatient });
+        savePatientProfileToCloud(updatedPatient).catch(console.warn);
+      },
       
       addGameSession: (session) => {
-        set((state) => ({ sessions: [session, ...state.sessions] }));
+        set((state) => ({ 
+          sessions: [session, ...state.sessions],
+          gardenState: {
+            ...state.gardenState,
+            flowersGrown: state.gardenState.flowersGrown + 1,
+            lastUpdated: new Date().toISOString(),
+          },
+        }));
         saveSessionToCloud(session).catch(console.error);
       },
       
@@ -342,11 +690,26 @@ export const useAppStore = create<AppState>()(
       },
       
       toggleReminder: (id) => {
-        set((state) => ({
-          reminders: state.reminders.map((r) =>
-            r.id === id ? { ...r, completed: !r.completed } : r
-          ),
-        }));
+        set((state) => {
+          let isNewlyCompleted = false;
+          const updated = state.reminders.map((r) => {
+            if (r.id === id) {
+              if (!r.completed) isNewlyCompleted = true;
+              return { ...r, completed: !r.completed };
+            }
+            return r;
+          });
+          return {
+            reminders: updated,
+            gardenState: isNewlyCompleted
+              ? {
+                  ...state.gardenState,
+                  flowersBloomed: state.gardenState.flowersBloomed + 1,
+                  lastUpdated: new Date().toISOString(),
+                }
+              : state.gardenState,
+          };
+        });
       },
       
       addObservation: (obs) => {
@@ -394,38 +757,33 @@ export const useAppStore = create<AppState>()(
         set({
           activePatient: { ...INITIAL_PATIENT, photoUrl: '/images/lakhimi_baruah.jpg' },
           customBranding: INITIAL_BRANDING,
+          themeMode: 'pastel',
+          familyPhotos: INITIAL_FAMILY_PHOTOS,
+          gardenState: INITIAL_GARDEN_STATE,
+          dailyRoutine: INITIAL_DAILY_ROUTINE,
         });
       },
     }),
     {
       name: 'cognicare-storage',
-      version: 3,
+      version: 4,
       storage: createJSONStorage(() => localStorage),
       migrate: (persistedState: any, version: number) => {
         let state = persistedState;
-        if (version < 2) {
+        if (version < 4) {
           state = {
             ...state,
-            activePatient: INITIAL_PATIENT,
-            reminders: INITIAL_REMINDERS,
-          };
-        }
-        if (version < 3) {
-          const activePatient = state?.activePatient || INITIAL_PATIENT;
-          const isUnsplash = typeof activePatient.photoUrl === 'string' && activePatient.photoUrl.includes('unsplash.com');
-          state = {
-            ...state,
-            activePatient: {
-              ...activePatient,
-              photoUrl: isUnsplash ? '/images/lakhimi_baruah.jpg' : (activePatient.photoUrl || '/images/lakhimi_baruah.jpg'),
-            },
-            customBranding: state?.customBranding || INITIAL_BRANDING,
+            themeMode: state?.themeMode || 'pastel',
+            familyPhotos: state?.familyPhotos || INITIAL_FAMILY_PHOTOS,
+            gardenState: state?.gardenState || INITIAL_GARDEN_STATE,
+            dailyRoutine: state?.dailyRoutine || INITIAL_DAILY_ROUTINE,
           };
         }
         return state;
       },
       partialize: (state) => ({
         language: state.language,
+        themeMode: state.themeMode,
         sessions: state.sessions,
         reminders: state.reminders,
         observations: state.observations,
@@ -433,6 +791,9 @@ export const useAppStore = create<AppState>()(
         activePatient: state.activePatient,
         authUser: state.authUser,
         customBranding: state.customBranding,
+        familyPhotos: state.familyPhotos,
+        gardenState: state.gardenState,
+        dailyRoutine: state.dailyRoutine,
       }),
     }
   )

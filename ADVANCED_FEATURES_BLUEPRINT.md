@@ -323,21 +323,21 @@ The following six breakthrough innovations are **fully implemented, tested, and 
 
 | Module | Implementation Status | Tech Stack / APIs | Offline Feasible? | Clinical Benchmark Reference |
 | :--- | :--- | :--- | :--- | :--- |
-| **ABHA ID Integration** | ✅ **Live in App** | Regex, QR Reader, ABDM Schema | ✅ 100% Offline | NHA / ABDM Guidelines 2026 |
-| **e-Sanjeevani Teleconsultation** | ✅ **Live in App** | `jspdf`, MoHFW Schema, Modals | ✅ 100% Offline | MoHFW eSanjeevani 2.0 Specs |
-| **Acoustic SNR Decibel Meter** | ✅ **Live in App** | Web Audio API, `AnalyserNode` | ✅ 100% Offline | ISO 1996-1 Acoustic Measurement |
-| **WhatsApp Family Intent** | ✅ **Live in App** | Direct `wa.me` URL Encoding | ✅ 100% Offline | WHO Age-Friendly Cities Initiative |
-| **Regional Epidemiological Heatmap** | ✅ **Live in App** | Lucide, CSS Grid, NER Data Tables | ✅ 100% Offline | ICMR / NHM North East Health Atlas |
-| **Firestore Cloud Sync** | ✅ **Live in App** | Firebase 12, Google Auth, Env | ⚡ Hybrid Sync | HIPAA / India Data Protection Act |
-| **Clock Drawing Test (CDT)** | 📋 Production Blueprint | HTML5 Canvas, Bezier Curve Math | ✅ 100% Offline | Rouleau et al., 1992 / Shulman, 2000 |
-| **Safe Return Geofence** | 📋 Production Blueprint | HTML5 Geolocation, Haversine Math | ✅ 100% Offline | Alzheimer's Association Safe Return |
-| **ASHA Batch QR Sync** | 📋 Production Blueprint | `pako` Gzip, Animated Canvas QR | ✅ 100% Offline | NHM Rural Connectivity Protocol |
-| **AI Trajectory Forecaster** | 📋 Production Blueprint | Recharts, Holt-Winters Exponential | ✅ 100% Offline | Lancet Commission on Dementia (2024) |
-| **Caregiver Burnout AI** | 📋 Production Blueprint | Web Audio RMS, $F_0$ Pitch Jitter | ✅ 100% Offline | Zarit Burden Interview (ZBI-12) |
-| **Olfactory Memory Recall** | 📋 Production Blueprint | Micro-encapsulated Scent Card + PWA | ✅ 100% Offline | Doty UPSIT & AIIMS Neurology 2025 |
-| **Circadian Lux Meter** | 📋 Production Blueprint | Canvas Luminance, Audio Prompt | ✅ 100% Offline | American Academy of Sleep Medicine |
-| **Blister-Pack CV Scanner** | 📋 Production Blueprint | Canvas Edge Convolution / Sobel | ✅ 100% Offline | FDA Geriatric Medication Safety Guide |
-| **Dialect Code-Mixing Parser** | 📋 Production Blueprint | Levenshtein Synset Distance | ✅ 100% Offline | CIIL Mysore Multilingual Norms |
+| **ABHA ID Integration** | ✅ **Live in App** ([`AshaScreeningPortal.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/asha/AshaScreeningPortal.tsx)) | Regex, QR Reader, ABDM Schema | ✅ 100% Offline | NHA / ABDM Guidelines 2026 |
+| **e-Sanjeevani Teleconsultation** | ✅ **Live in App** ([`ESanjeevaniReferralModal.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/asha/ESanjeevaniReferralModal.tsx)) | `jspdf`, MoHFW Schema, Modals | ✅ 100% Offline | MoHFW eSanjeevani 2.0 Specs |
+| **Acoustic SNR Decibel Meter** | ✅ **Live in App** ([`WordAssociationFood.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/games/WordAssociationFood.tsx)) | Web Audio API, `AnalyserNode` | ✅ 100% Offline | ISO 1996-1 Acoustic Measurement |
+| **WhatsApp Family Intent** | ✅ **Live in App** ([`WhatsAppShareButton.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/common/WhatsAppShareButton.tsx)) | Direct `wa.me` URL Encoding | ✅ 100% Offline | WHO Age-Friendly Cities Initiative |
+| **Regional Epidemiological Heatmap** | ✅ **Live in App** ([`RegionalEpidemiologyHeatmap.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/asha/RegionalEpidemiologyHeatmap.tsx)) | Lucide, CSS Grid, NER Data Tables | ✅ 100% Offline | ICMR / NHM North East Health Atlas |
+| **Firestore Cloud Sync** | ✅ **Live in App** ([`cloudSync.ts`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/services/cloudSync.ts)) | Firebase 12, Google Auth, Env | ⚡ Hybrid Sync | HIPAA / India Data Protection Act |
+| **Clock Drawing Test (CDT)** | ✅ **Live in App** ([`ClockDrawingTest.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/games/ClockDrawingTest.tsx)) | HTML5 Canvas, Rouleau 10-Pt Metric | ✅ 100% Offline | Rouleau et al., 1992 / Shulman, 2000 |
+| **Safe Return Geofence** | ✅ **Live in App** ([`SafeHomeSOS.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/patient/SafeHomeSOS.tsx) / [`geofenceService.ts`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/services/geofenceService.ts)) | HTML5 Geolocation, Haversine Math | ✅ 100% Offline | Alzheimer's Association Safe Return |
+| **ASHA Batch QR Sync** | ✅ **Live in App** ([`AshaBatchQrSync.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/asha/AshaBatchQrSync.tsx)) | `pako` Gzip, Animated Canvas QR | ✅ 100% Offline | NHM Rural Connectivity Protocol |
+| **AI Trajectory Forecaster** | ✅ **Live in App** ([`CognitiveTrajectoryForecaster.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/caregiver/CognitiveTrajectoryForecaster.tsx)) | Recharts, Holt-Winters Exponential | ✅ 100% Offline | Lancet Commission on Dementia (2024) |
+| **Caregiver Burnout AI** | ✅ **Live in App** ([`CaregiverBurnoutRespite.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/caregiver/CaregiverBurnoutRespite.tsx)) | Web Audio RMS, $F_0$ Pitch Jitter | ✅ 100% Offline | Zarit Burden Interview (ZBI-12) |
+| **Olfactory Memory Recall** | ✅ **Live in App** ([`OlfactoryRecallKit.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/games/OlfactoryRecallKit.tsx)) | Micro-encapsulated Scent Card + PWA | ✅ 100% Offline | Doty UPSIT & AIIMS Neurology 2025 |
+| **Circadian Lux Meter** | ✅ **Live in App** ([`CircadianLuxMeter.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/patient/CircadianLuxMeter.tsx)) | Canvas Luminance, Audio Prompt | ✅ 100% Offline | American Academy of Sleep Medicine |
+| **Blister-Pack CV Scanner** | ✅ **Live in App** ([`BlisterPackScanner.tsx`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/components/patient/BlisterPackScanner.tsx)) | Canvas Edge Convolution / Sobel | ✅ 100% Offline | FDA Geriatric Medication Safety Guide |
+| **Dialect Code-Mixing Parser** | ✅ **Live in App** ([`dialectNlp.ts`](file:///c:/Ace%20SIH%20Hackathon/ACTUAL%2026003%20CODE/apps/cognicare-app/src/services/dialectNlp.ts)) | Levenshtein Synset Distance | ✅ 100% Offline | CIIL Mysore Multilingual Norms |
 
 ---
 

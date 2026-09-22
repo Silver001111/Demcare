@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   ClipboardCheck,
   WifiOff,
@@ -11,11 +11,9 @@ import {
   QrCode,
   Send,
   MapPin,
-  FileSpreadsheet,
-  AlertTriangle,
   Loader2,
 } from 'lucide-react';
-import { AshaObservation, PatientProfile, LanguageCode, TeleconsultReferral } from '../../types';
+import { AshaObservation, PatientProfile, LanguageCode } from '../../types';
 import { t } from '../../translations';
 import { ESanjeevaniReferralModal } from './ESanjeevaniReferralModal';
 import { RegionalEpidemiologyHeatmap } from './RegionalEpidemiologyHeatmap';
@@ -55,17 +53,18 @@ export const AshaScreeningPortal: React.FC<Props> = ({
   const [patientAbhaId, setPatientAbhaId] = useState<string>(selectedPatient?.abhaId || '14-8832-1920-4411');
   const [abhaVerified, setAbhaVerified] = useState<boolean>(true);
   const [isVerifyingAbha, setIsVerifyingAbha] = useState<boolean>(false);
+  const [prevPatientId, setPrevPatientId] = useState<string>(selectedPatient?.id || '');
 
   // e-Sanjeevani Modal State
   const [showESanjeevaniModal, setShowESanjeevaniModal] = useState<boolean>(false);
   const [referralTargetObs, setReferralTargetObs] = useState<AshaObservation | undefined>(undefined);
 
-  useEffect(() => {
-    if (selectedPatient) {
-      setPatientAbhaId(selectedPatient.abhaId || '14-8832-1920-4411');
-      setAbhaVerified(true);
-    }
-  }, [selectedPatientId, selectedPatient]);
+  // Adjust ABHA ID state when selected patient changes (React-recommended state adjustment pattern)
+  if (selectedPatient && selectedPatient.id !== prevPatientId) {
+    setPrevPatientId(selectedPatient.id);
+    setPatientAbhaId(selectedPatient.abhaId || '14-8832-1920-4411');
+    setAbhaVerified(true);
+  }
 
   const totalScore = orientationScore + recallScore + attentionScore; // Out of 15
 

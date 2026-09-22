@@ -51,6 +51,8 @@ export const SettingsCustomizationModal: React.FC<Props> = ({ isOpen, onClose, l
   const {
     activePatient,
     customBranding,
+    themeMode,
+    setThemeMode,
     updatePatientProfile,
     updateCustomBranding,
     resetToRegionalDefaults,
@@ -419,9 +421,57 @@ export const SettingsCustomizationModal: React.FC<Props> = ({ isOpen, onClose, l
             </div>
           )}
 
-          {/* TAB 3: BRANDING */}
+          {/* TAB 3: BRANDING & THEME */}
           {activeTab === 'branding' && (
             <div className="space-y-4 text-xs font-bold text-ner-earth">
+              {/* Visual Color Theme Palette Selector */}
+              <div>
+                <label className="block mb-2 text-sm text-ner-bark">Visual Color Theme & Aesthetic:</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div
+                    onClick={() => {
+                      setThemeMode('pastel');
+                      showToast('Switched to Pastel Serenity Theme!');
+                    }}
+                    className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                      themeMode === 'pastel'
+                        ? 'bg-sky-50 border-sky-500 ring-2 ring-sky-300 shadow-md'
+                        : 'bg-white border-ner-sand hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">🌿</span>
+                      <span className="font-bold text-slate-900 text-sm">Pastel Serenity</span>
+                      {themeMode === 'pastel' && <span className="ml-auto text-sky-600 font-extrabold">Active</span>}
+                    </div>
+                    <p className="text-[11px] text-slate-600 font-normal leading-tight">
+                      Soft sky blue, fresh mint green, and crisp white. Calms agitation and reduces sensory overload in dementia patients.
+                    </p>
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setThemeMode('heritage');
+                      showToast('Switched to Cultural Heritage Theme!');
+                    }}
+                    className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                      themeMode === 'heritage'
+                        ? 'bg-amber-50 border-ner-terracotta ring-2 ring-amber-300 shadow-md'
+                        : 'bg-white border-ner-sand hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">🏛️</span>
+                      <span className="font-bold text-ner-bark text-sm">Cultural Heritage</span>
+                      {themeMode === 'heritage' && <span className="ml-auto text-ner-terracotta font-extrabold">Active</span>}
+                    </div>
+                    <p className="text-[11px] text-ner-earth font-normal leading-tight">
+                      Assamese terracotta, tea garden forest green, and warm cream. Celebrates regional North-East heritage.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="block mb-1.5">App Logo Icon:</label>
                 <div className="flex flex-wrap gap-2">

@@ -131,3 +131,133 @@ body {
 .animate-slideUp {
   animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
+
+/* ========================================================
+   DUAL THEME ENGINE: PASTEL SERENITY vs CULTURAL HERITAGE
+   ======================================================== */
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Pastel Serenity Theme (Light Blue + Soft Green + Crisp White) */
+[data-theme="pastel"],
+body.theme-pastel {
+  background-color: #F0F9FF; /* Sky 50 */
+  background-image: radial-gradient(at 0% 0%, #E0F2FE 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, #DCFCE7 0px, transparent 50%);
+  color: #0F172A; /* Slate 900 */
+}
+
+/* Pastel adjustments for cards */
+[data-theme="pastel"] .bg-white {
+  background-color: #FFFFFF !important;
+  border-color: #BAE6FD !important; /* Sky 200 */
+}
+
+[data-theme="pastel"] .gamosa-border {
+  border-top: 5px solid #0284C7 !important; /* Sky 600 */
+}
+
+/* Pastel tactile buttons */
+[data-theme="pastel"] .btn-tactile {
+  box-shadow: 0 5px 0 0 #0369A1, 0 8px 16px rgba(2, 132, 199, 0.15) !important;
+}
+
+[data-theme="pastel"] .btn-tactile:active {
+  box-shadow: 0 2px 0 0 #0369A1, 0 4px 8px rgba(2, 132, 199, 0.1) !important;
+}
+
+[data-theme="pastel"] .btn-tactile-green {
+  background-color: #059669 !important; /* Emerald 600 */
+  border-color: #047857 !important;
+  box-shadow: 0 5px 0 0 #047857, 0 8px 16px rgba(5, 150, 105, 0.2) !important;
+}
+
+[data-theme="pastel"] .btn-tactile-green:active {
+  box-shadow: 0 2px 0 0 #047857, 0 4px 8px rgba(5, 150, 105, 0.15) !important;
+}
+
+/* Float and sway animations for Memory Garden */
+@keyframes sway {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.animate-sway {
+  animation: sway 3.5s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+
+@keyframes float-butterfly {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(15px, -18px) scale(1.05); }
+  66% { transform: translate(-12px, -28px) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.animate-butterfly {
+  animation: float-butterfly 6s ease-in-out infinite;
+}
+
+@keyframes bloom-pop {
+  0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.animate-bloom-pop {
+  animation: bloom-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ========================================================
+   PRINT STYLESHEET (BEDSIDE FLASHCARDS & CLINICAL REPORTS)
+   ======================================================== */
+@media print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+  }
+
+  /* Hide all interactive app chrome, navigations, audio players, modals overlay background */
+  .no-print,
+  nav,
+  header,
+  footer,
+  .btn-tactile,
+  .companion-bar,
+  aside {
+    display: none !important;
+  }
+
+  /* Clean print view container */
+  .print-only-container {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Printable flashcards 3x3 layout */
+  .printable-flashcards-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+    page-break-inside: avoid !important;
+  }
+
+  .printable-card {
+    border: 2px dashed #475569 !important;
+    border-radius: 12px !important;
+    padding: 12px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+  }
+}
+

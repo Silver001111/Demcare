@@ -109,7 +109,7 @@ export const DailyRoutineSort: React.FC<Props> = ({ patient, lang, onBack, onFin
       touchPrecision: 0.94,
     };
 
-    const previousScores = {
+    const previousScores = patient.domainScores || {
       memory: patient.compositeCognitiveScore,
       attention: patient.compositeCognitiveScore,
       executive: patient.compositeCognitiveScore,

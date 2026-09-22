@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, RotateCcw, Volume2, Sparkles, Award, ShieldAlert, CheckCircle2, AlertTriangle, Eye, HelpCircle } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { ArrowLeft, Volume2, Sparkles, CheckCircle2, AlertTriangle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { audioSpeech } from '../../services/audioSpeech';
 import { calculateCognitiveScore } from '../../services/aiEngine';
 import { LanguageCode, GameSession, PatientProfile } from '../../types';
 import { t } from '../../translations';
-import { WhatsAppShareButton } from '../common/WhatsAppShareButton';
 
 interface StrokePoint {
   x: number;
@@ -30,7 +29,7 @@ export const ClockDrawingTest: React.FC<Props> = ({ patient, lang, onBack, onFin
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [currentStroke, setCurrentStroke] = useState<StrokePoint[]>([]);
   const [useGuideCircle, setUseGuideCircle] = useState(false);
-  const [startTime] = useState<number>(Date.now());
+  const [startTime] = useState<number>(() => Date.now());
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<{
     rouleauScore: number;
@@ -45,7 +44,7 @@ export const ClockDrawingTest: React.FC<Props> = ({ patient, lang, onBack, onFin
   } | null>(null);
 
   // Spoken native prompt
-  const getPromptText = () => {
+  const getPromptText = useCallback(() => {
     if (lang === 'as') {
       return 'এখন ঘড়ীৰ ছবি আঁকক, তাত ১ ৰ পৰা ১২ লৈকে সংখ্যাবোৰ বহাওক, আৰু কাঁটা দুডাল ১১ বাজি ১০ মিনিট দেখুৱাই থওক।';
     } else if (lang === 'bn') {
@@ -66,17 +65,9 @@ export const ClockDrawingTest: React.FC<Props> = ({ patient, lang, onBack, onFin
       return 'घडीको चित्र बनाउनुहोस्, १ देखि १२ सम्मका अंक लेख्नुहोस्, र सुईहरूलाई ११ बजेर १० मिनेटमा मिलाउनुहोस्।';
     }
     return 'Draw a clock face, place numbers 1 to 12, and set the hands to 10 past 11.';
-  };
+  }, [lang]);
 
-  useEffect(() => {
-    redrawCanvas();
-  }, [strokes, currentStroke, useGuideCircle]);
-
-  useEffect(() => {
-    audioSpeech.speak(getPromptText(), lang);
-  }, []);
-
-  const redrawCanvas = () => {
+  const redrawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -121,7 +112,15 @@ export const ClockDrawingTest: React.FC<Props> = ({ patient, lang, onBack, onFin
       }
       ctx.stroke();
     }
-  };
+  }, [strokes, currentStroke, useGuideCircle]);
+
+  useEffect(() => {
+    redrawCanvas();
+  }, [redrawCanvas]);
+
+  useEffect(() => {
+    audioSpeech.speak(getPromptText(), lang);
+  }, [getPromptText, lang]);
 
   const getCanvasCoords = (e: React.MouseEvent | React.TouchEvent): { x: number; y: number } | null => {
     const canvas = canvasRef.current;
@@ -307,10 +306,10 @@ export const ClockDrawingTest: React.FC<Props> = ({ patient, lang, onBack, onFin
 
       // 2. Layer B: Number Distribution & Hemispatial Neglect Detection
       let rightCount = 0;
-      let leftCount = 0;
+      let _leftCount = 0;
       allPoints.forEach((p) => {
         if (p.x >= centerX) rightCount++;
-        else leftCount++;
+        else _leftCount++;
       });
 
       const totalPoints = allPoints.length;
@@ -393,7 +392,7 @@ export const ClockDrawingTest: React.FC<Props> = ({ patient, lang, onBack, onFin
     const durationSec = Math.max(10, Math.round((Date.now() - startTime) / 1000));
     const normalizedAccuracy = result.rouleauScore / 5;
 
-    const previousScores = {
+    const previousScores = patient.domainScores || {
       memory: patient.compositeCognitiveScore,
       attention: patient.compositeCognitiveScore,
       executive: patient.compositeCognitiveScore,

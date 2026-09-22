@@ -128,7 +128,7 @@ export const MarketSpotDifference: React.FC<Props> = ({ patient, lang, onBack, o
       touchPrecision: 0.90,
     };
 
-    const previousScores = {
+    const previousScores = patient.domainScores || {
       memory: patient.compositeCognitiveScore,
       attention: patient.compositeCognitiveScore,
       executive: patient.compositeCognitiveScore,

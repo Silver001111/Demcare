@@ -122,17 +122,49 @@ export interface PatientProfile {
   emergencyContact: string;
   photoUrl: string;
   abhaId?: string; // 14-digit Ayushman Bharat Health Account (e.g. 14-8832-1920-4411)
+  domainScores?: CognitiveDomainScores;
 }
 
 export interface ReminderItem {
   id: string;
-  type: 'medicine' | 'hydration' | 'appointment' | 'activity' | 'family_call';
+  type: 'medicine' | 'hydration' | 'appointment' | 'activity' | 'family_call' | 'meal';
   title: LocalizedText;
   time: string;
   dosage?: LocalizedText;
   spokenPrompt: { [key in LanguageCode]?: string };
   completed: boolean;
   repeat: string;
+}
+
+export type ThemeMode = 'pastel' | 'heritage';
+
+export interface FamilyMemoryPhoto {
+  id: string;
+  photoUrl: string; // Base64 or local asset
+  personName: string;
+  relationship: string; // e.g. "Granddaughter", "Son", "Spouse", "Friend"
+  yearOrOccasion?: string;
+  notes?: string;
+  audioVoiceNoteUrl?: string; // Base64 audio recorded by caregiver (e.g. "Grandmother, it's Ananya!")
+  audioDurationSeconds?: number;
+  createdAt: string;
+}
+
+export interface MemoryGardenState {
+  flowersGrown: number;     // incremented when cognitive game completed
+  flowersBloomed: number;   // incremented when reminder taken
+  plantsUnlocked: string[]; // regional unlocked plants: kopou_orchid, brahmaputra_lotus, assam_tea, marigold
+  waterCountToday: number;  // daily water actions
+  lastUpdated: string;
+}
+
+export interface DailyRoutineItem {
+  id: string;
+  timeSlot: 'morning' | 'breakfast' | 'exercise' | 'game' | 'rest' | 'evening';
+  title: LocalizedText;
+  icon: string;
+  defaultTime: string;
+  completed: boolean;
 }
 
 export interface AshaObservation {

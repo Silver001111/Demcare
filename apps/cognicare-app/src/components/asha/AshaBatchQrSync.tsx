@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, QrCode, Camera, RefreshCw, CheckCircle2, ShieldCheck, Download, Upload, Zap, Sparkles } from 'lucide-react';
+import { ArrowLeft, QrCode, Camera, CheckCircle2, Zap } from 'lucide-react';
 import * as pako from 'pako';
 import QRCode from 'qrcode';
 import confetti from 'canvas-confetti';

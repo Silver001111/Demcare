@@ -38,9 +38,6 @@ function LoadingFallback() {
 import {
   PatientProfile,
   GameSession,
-  ReminderItem,
-  AshaObservation,
-  AlertNotification,
   GameType,
   SUPPORTED_LANGUAGES,
 } from './types';
@@ -100,6 +97,14 @@ const INITIAL_PATIENTS: PatientProfile[] = [
     ashaWorkerPhone: '+91 98640 54321',
     emergencyContact: '+91 94350 12345',
     photoUrl: '/images/lakhimi_baruah.jpg',
+    abhaId: '14-8832-1920-4411',
+    domainScores: {
+      memory: 74,
+      attention: 78,
+      executive: 70,
+      visuospatial: 75,
+      language: 82,
+    },
   },
 ];
 
@@ -117,7 +122,6 @@ export function App() {
     alerts,
     observations,
     logout,
-    setActivePatient,
     addGameSession,
     addReminder,
     toggleReminder,
@@ -125,6 +129,8 @@ export function App() {
     addObservation,
     syncAll,
     updatePatientScores,
+    themeMode,
+    setThemeMode,
   } = useAppStore();
 
   const [activeGame, setActiveGame] = useState<'none' | GameType>('none');
@@ -135,6 +141,11 @@ export function App() {
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', themeMode);
+    document.body.className = `theme-${themeMode}`;
+  }, [themeMode]);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -249,6 +260,16 @@ export function App() {
                 )}
               </div>
             )}
+
+            {/* Theme Toggle */}
+            <button
+              onClick={() => setThemeMode(themeMode === 'pastel' ? 'heritage' : 'pastel')}
+              className="px-3 py-1.5 rounded-full text-xs font-bold border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 transition-all flex items-center gap-1.5 shadow-sm"
+              title="Toggle Theme (Pastel Serenity vs Cultural Heritage)"
+            >
+              <span>{themeMode === 'pastel' ? '🌿' : '🏛️'}</span>
+              <span className="hidden sm:inline font-semibold">{themeMode === 'pastel' ? 'Pastel Serenity' : 'Heritage Theme'}</span>
+            </button>
 
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-ner-sand rounded-full border border-ner-earth/30">
               <RoleIcon className="w-4 h-4 text-ner-bark" />
@@ -392,7 +413,7 @@ export function App() {
 
         {userRole === 'asha' && (
           <AshaScreeningPortal
-            patients={INITIAL_PATIENTS}
+            patients={activePatient ? [activePatient] : INITIAL_PATIENTS}
             observations={observations}
             onAddObservation={addObservation}
             onSync={handleSyncAll}

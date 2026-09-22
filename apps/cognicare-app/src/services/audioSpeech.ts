@@ -4,14 +4,35 @@ class AudioSpeechService {
   private audioCtx: AudioContext | null = null;
   private ambientGain: GainNode | null = null;
   private isPlayingAmbient = false;
+  private cachedVoices: SpeechSynthesisVoice[] = [];
 
-  private getAudioContext(): AudioContext {
+  constructor() {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      this.loadVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        this.loadVoices();
+      };
+    }
+  }
+
+  private loadVoices() {
+    try {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        this.cachedVoices = voices;
+      }
+    } catch {
+      // Ignore in non-browser environments
+    }
+  }
+
+  public getAudioContext(): AudioContext {
     if (!this.audioCtx) {
       const AudioCtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.audioCtx = new AudioCtxClass();
     }
     if (this.audioCtx.state === 'suspended') {
-      this.audioCtx.resume();
+      this.audioCtx.resume().catch(() => {});
     }
     return this.audioCtx;
   }
@@ -48,8 +69,8 @@ class AudioSpeechService {
 
       utterance.lang = langMap[lang] || 'en-IN';
 
-      // Find best available voice
-      const voices = window.speechSynthesis.getVoices();
+      // Find best available voice from cache or direct call
+      const voices = this.cachedVoices.length > 0 ? this.cachedVoices : window.speechSynthesis.getVoices();
       const matchedVoice = voices.find(v => v.lang.startsWith(utterance.lang.slice(0, 2))) ||
                            voices.find(v => v.lang.includes('IN')) ||
                            voices[0];
@@ -61,6 +82,15 @@ class AudioSpeechService {
       utterance.onerror = () => resolve();
       window.speechSynthesis.speak(utterance);
     });
+  }
+
+  /**
+   * Immediately stops any active speech synthesis
+   */
+  public stop(): void {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
   }
 
   /**

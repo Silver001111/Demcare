@@ -173,9 +173,8 @@ export const OlfactoryRecallKit: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    setIsScratched(false);
-    audioSpeech.speak(getZonePrompt(activeZone), lang);
-  }, [currentStep]);
+    audioSpeech.speak(getZonePrompt(AROMA_ZONES[currentStep]), lang);
+  }, [currentStep, lang]);
 
   const handleSelectOption = (optionId: string) => {
     const updated = { ...selectedAnswers, [currentStep]: optionId };
@@ -184,6 +183,7 @@ export const OlfactoryRecallKit: React.FC<Props> = ({
 
     if (currentStep < AROMA_ZONES.length - 1) {
       setTimeout(() => {
+        setIsScratched(false);
         setCurrentStep((prev) => prev + 1);
       }, 500);
     } else {
@@ -210,7 +210,7 @@ export const OlfactoryRecallKit: React.FC<Props> = ({
 
     const durationSec = Math.max(12, Math.round((Date.now() - startTime) / 1000));
 
-    const previousScores = {
+    const previousScores = patient.domainScores || {
       memory: patient.compositeCognitiveScore,
       attention: patient.compositeCognitiveScore,
       executive: patient.compositeCognitiveScore,

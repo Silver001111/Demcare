@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { AlertTriangle, Plus, Download, Pill, CheckCircle2, Send, ShieldCheck, MessageCircle, Settings } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { AlertTriangle, Plus, Download, Send, ShieldCheck, Settings } from 'lucide-react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import jsPDF from 'jspdf';
 import { mapToClinicalStandards, detectCognitiveDecline } from '../../services/aiEngine';
@@ -8,6 +8,8 @@ import { ESanjeevaniReferralModal } from '../asha/ESanjeevaniReferralModal';
 import { SettingsCustomizationModal } from '../common/SettingsCustomizationModal';
 import { CognitiveTrajectoryForecaster } from './CognitiveTrajectoryForecaster';
 import { CaregiverBurnoutRespite } from './CaregiverBurnoutRespite';
+import { AiCareCircleWidget } from './AiCareCircleWidget';
+import { FamilyMemoryManager } from './FamilyMemoryManager';
 import {
   PatientProfile,
   GameSession,
@@ -38,12 +40,12 @@ export const CaregiverDashboard: React.FC<Props> = ({
   lang = 'en',
 }) => {
   const [activeTab, setActiveTab] = useState<
-    'analytics' | 'trajectory' | 'respite' | 'reminders' | 'alerts' | 'report'
+    'analytics' | 'trajectory' | 'respite' | 'family_photos' | 'reminders' | 'alerts' | 'report'
   >('analytics');
   const [showAddReminderModal, setShowAddReminderModal] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newTime, setNewTime] = useState('08:00 AM');
-  const [newType, setNewType] = useState<'medicine' | 'hydration' | 'activity'>('medicine');
+  const [newType, setNewType] = useState<'medicine' | 'hydration' | 'activity' | 'appointment' | 'meal'>('medicine');
   const [newDosage, setNewDosage] = useState('');
   const [showESanjeevaniModal, setShowESanjeevaniModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -60,11 +62,14 @@ export const CaregiverDashboard: React.FC<Props> = ({
   const domainLanguage = latestSession ? latestSession.domainScores.language : 82;
 
   // Dual Radar comparison: current vs 2-week baseline
-  const twoWeeksAgo = Date.now() - (14 * 24 * 60 * 60 * 1000);
-  const oldSessions = sessions.filter((s) => new Date(s.timestamp).getTime() < twoWeeksAgo);
-  const oldScores = oldSessions.length > 0
-    ? oldSessions[oldSessions.length - 1].domainScores
-    : { memory: 68, attention: 72, executive: 66, visuospatial: 71, language: 76 };
+  const [currentTimestamp] = useState(() => Date.now());
+  const oldScores = useMemo(() => {
+    const twoWeeksAgo = currentTimestamp - (14 * 24 * 60 * 60 * 1000);
+    const oldSessions = sessions.filter((s) => new Date(s.timestamp).getTime() < twoWeeksAgo);
+    return oldSessions.length > 0
+      ? oldSessions[oldSessions.length - 1].domainScores
+      : { memory: 68, attention: 72, executive: 66, visuospatial: 71, language: 76 };
+  }, [sessions, currentTimestamp]);
 
   const radarData = [
     { domain: 'Memory', current: domainMemory, previous: oldScores.memory, fullMark: 100 },
@@ -277,6 +282,16 @@ export const CaregiverDashboard: React.FC<Props> = ({
             🎋 Respite & Burnout
           </button>
           <button
+            onClick={() => setActiveTab('family_photos')}
+            className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all flex items-center gap-1 ${
+              activeTab === 'family_photos'
+                ? 'bg-rose-700 text-white shadow-sm'
+                : 'text-ner-bark hover:bg-white/60'
+            }`}
+          >
+            ❤️ Family Memories
+          </button>
+          <button
             onClick={() => setActiveTab('reminders')}
             className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all ${
               activeTab === 'reminders'
@@ -311,6 +326,17 @@ export const CaregiverDashboard: React.FC<Props> = ({
           </button>
         </div>
       </div>
+
+      {/* AI Care Circle Traffic Light & Suggestions Widget */}
+      <AiCareCircleWidget
+        patient={patient}
+        sessions={sessions}
+        reminders={reminders}
+        alerts={alerts}
+        lang={lang}
+        onOpenFamilyGame={() => setActiveTab('family_photos')}
+        onCallAsha={() => window.open(`tel:${patient.ashaWorkerPhone}`, '_self')}
+      />
 
       {/* ABDM, WhatsApp & Teleconsultation Quick Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-white border-2 border-ner-earth/20 rounded-2xl shadow-sm">
@@ -604,6 +630,13 @@ export const CaregiverDashboard: React.FC<Props> = ({
         <CaregiverBurnoutRespite patient={patient} lang={lang} />
       )}
 
+      {/* TAB: FAMILY MEMORY PHOTO VAULT */}
+      {activeTab === 'family_photos' && (
+        <div className="animate-fadeIn">
+          <FamilyMemoryManager lang={lang} />
+        </div>
+      )}
+
       {/* TAB 2: REMINDERS SCHEDULER */}
       {activeTab === 'reminders' && (
         <div className="space-y-6 animate-fadeIn">
@@ -625,7 +658,7 @@ export const CaregiverDashboard: React.FC<Props> = ({
               <div key={r.id} className="bg-white border-2 border-ner-earth/20 rounded-3xl p-5 shadow-card-warm flex items-center justify-between">
                 <div className="flex items-center gap-3.5">
                   <span className="text-3xl p-2.5 bg-amber-50 rounded-2xl border border-amber-200">
-                    {r.type === 'medicine' ? '💊' : r.type === 'hydration' ? '💧' : '🚶'}
+                    {r.type === 'medicine' ? '💊' : r.type === 'hydration' ? '💧' : r.type === 'appointment' ? '🩺' : r.type === 'meal' ? '🥗' : '🚶'}
                   </span>
                   <div>
                     <h4 className="text-lg font-bold text-ner-bark">{getLocalizedText(r.title, lang)}</h4>
@@ -768,6 +801,8 @@ export const CaregiverDashboard: React.FC<Props> = ({
                   >
                     <option value="medicine">{t('type_medicine', lang)}</option>
                     <option value="hydration">{t('type_hydration', lang)}</option>
+                    <option value="appointment">🩺 Doctor Appointment</option>
+                    <option value="meal">🥗 Healthy Meal / Nutrition</option>
                     <option value="activity">{t('type_activity', lang)}</option>
                   </select>
                 </div>

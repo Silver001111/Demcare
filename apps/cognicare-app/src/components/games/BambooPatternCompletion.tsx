@@ -129,7 +129,7 @@ export const BambooPatternCompletion: React.FC<Props> = ({ patient, lang, onBack
       touchPrecision: 0.95,
     };
 
-    const previousScores = {
+    const previousScores = patient.domainScores || {
       memory: patient.compositeCognitiveScore,
       attention: patient.compositeCognitiveScore,
       executive: patient.compositeCognitiveScore,

@@ -6,6 +6,9 @@ import { LanguageCode, PatientProfile, ReminderItem, SUPPORTED_LANGUAGES, GameTy
 import { t } from '../../translations';
 import { useAppStore } from '../../store/useAppStore';
 import { WhatsAppShareButton } from '../common/WhatsAppShareButton';
+import { MemoryGarden } from './MemoryGarden';
+import { ProactiveCompanionBar } from './ProactiveCompanionBar';
+import { DailyRoutineChecklist } from './DailyRoutineChecklist';
 
 interface Props {
   patient: PatientProfile;
@@ -30,7 +33,7 @@ export const PatientHome: React.FC<Props> = ({
   reminders,
   onToggleReminder,
 }) => {
-  const { sessions, setLanguage } = useAppStore();
+  const { sessions, setLanguage, themeMode, setThemeMode } = useAppStore();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [isSundowningHour, setIsSundowningHour] = useState(false);
 
@@ -102,7 +105,21 @@ export const PatientHome: React.FC<Props> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
+          {/* Theme Mode Toggle (Pastel Serenity vs Cultural Heritage) */}
+          <button
+            onClick={() => setThemeMode(themeMode === 'pastel' ? 'heritage' : 'pastel')}
+            className={`btn-tactile px-3.5 py-2 text-xs font-bold border-2 transition-all flex items-center gap-1.5 ${
+              themeMode === 'pastel'
+                ? 'bg-sky-100 text-sky-800 border-sky-300 shadow-sm'
+                : 'bg-white text-ner-bark border-ner-bark'
+            }`}
+            title="Switch Visual Theme"
+          >
+            <span>{themeMode === 'pastel' ? '🌿' : '🏛️'}</span>
+            <span className="hidden sm:inline">{themeMode === 'pastel' ? 'Pastel' : 'Heritage'}</span>
+          </button>
+
           <button
             onClick={handleSpeakWelcome}
             className="p-3.5 bg-ner-gold text-ner-bark rounded-2xl shadow-md hover:scale-105 active:scale-95 transition-transform"
@@ -120,6 +137,14 @@ export const PatientHome: React.FC<Props> = ({
           </button>
         </div>
       </div>
+
+      {/* Friendly Proactive Voice & Text Companion Bar */}
+      <ProactiveCompanionBar
+        patient={patient}
+        lang={lang}
+        reminders={reminders}
+        onStartRecommendedGame={() => onStartGame('card_match')}
+      />
 
       {/* Daily Progress Ring & Goal Banner */}
       <div className="bg-white border-2 border-ner-earth/20 rounded-3xl p-5 shadow-card-warm flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -182,6 +207,12 @@ export const PatientHome: React.FC<Props> = ({
           />
         </div>
       </div>
+
+      {/* Gamified Memory Garden */}
+      <MemoryGarden lang={lang} />
+
+      {/* Daily Routine Rhythm Checklist */}
+      <DailyRoutineChecklist lang={lang} />
 
       {/* Auto-suggested Sundowning Banner (4 PM - 8 PM) */}
       {isSundowningHour && (
@@ -255,7 +286,7 @@ export const PatientHome: React.FC<Props> = ({
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">
-                    {rem.type === 'medicine' ? '💊' : rem.type === 'hydration' ? '💧' : '🪔'}
+                    {rem.type === 'medicine' ? '💊' : rem.type === 'hydration' ? '💧' : rem.type === 'appointment' ? '🩺' : rem.type === 'meal' ? '🥗' : '🪔'}
                   </span>
                   <div>
                     <div className="text-base font-bold text-ner-bark">
@@ -541,7 +572,7 @@ export const PatientHome: React.FC<Props> = ({
       </div>
 
       {/* Secondary Supportive Features */}
-      <div className="grid md:grid-cols-3 gap-4 pt-2">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
         <button
           onClick={onOpenReminiscence}
           className="btn-tactile bg-gradient-to-br from-amber-50 to-orange-100 border-2 border-ner-amber/50 p-4 rounded-3xl flex items-center gap-3.5 text-left hover:shadow-lg hover:-translate-y-1 transition-all"
@@ -571,6 +602,18 @@ export const PatientHome: React.FC<Props> = ({
           </div>
           <div className="text-lg font-serif font-bold text-ner-redSilk">{t('safe_home_sos', lang)}</div>
         </button>
+
+        {onOpenBlisterScanner && (
+          <button
+            onClick={onOpenBlisterScanner}
+            className="btn-tactile bg-blue-50 border-2 border-blue-400 p-4 rounded-3xl flex items-center gap-3.5 text-left hover:shadow-lg hover:-translate-y-1 transition-all"
+          >
+            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-3xl shrink-0 border border-blue-300 shadow-sm">
+              📷
+            </div>
+            <div className="text-lg font-serif font-bold text-blue-900">{t('blister_scanner', lang)}</div>
+          </button>
+        )}
       </div>
 
       {/* Language Selection Modal */}
