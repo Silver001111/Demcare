@@ -12,11 +12,16 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,webmanifest}'],
       },
       manifest: {
-        name: 'CogniCare NER',
+        name: 'CogniCare NER (স্মৃতি-সেতু)',
         short_name: 'CogniCare',
-        description: 'MDoNER MedTech Platform for Dementia Care',
-        theme_color: '#2d5a27', // ner-forest
-        background_color: '#fdfbf7', // ner-cream
+        description: 'Offline-First Multilingual AI Dementia Care Platform for Elderly & Caregivers',
+        theme_color: '#131722',
+        background_color: '#0B0F17',
+        display: 'standalone',
+        orientation: 'portrait',
+        start_url: '/',
+        scope: '/',
+        categories: ['health', 'medical', 'education'],
         icons: [
           {
             src: 'pwa-192x192.png',

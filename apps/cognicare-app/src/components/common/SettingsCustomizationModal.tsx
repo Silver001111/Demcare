@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Check, Upload, RotateCcw, Camera, User, Building2, Save, Image, ShieldCheck } from 'lucide-react';
+import { X, Check, Upload, RotateCcw, Camera, User, Building2, Save, ShieldCheck } from 'lucide-react';
 import { useAppStore, INITIAL_PATIENT, INITIAL_BRANDING } from '../../store/useAppStore';
 import { LanguageCode } from '../../types';
 import { t } from '../../translations';
@@ -426,14 +426,35 @@ export const SettingsCustomizationModal: React.FC<Props> = ({ isOpen, onClose, l
             <div className="space-y-4 text-xs font-bold text-ner-earth">
               {/* Visual Color Theme Palette Selector */}
               <div>
-                <label className="block mb-2 text-sm text-ner-bark">Visual Color Theme & Aesthetic:</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="block mb-2 text-sm text-ner-bark">Visual Color Theme & Aesthetic (7 Specialized Palettes):</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto pr-1">
+                  <div
+                    onClick={() => {
+                      setThemeMode('midnight');
+                      showToast('Switched to Midnight Obsidian Theme!');
+                    }}
+                    className={`p-3 rounded-2xl border-2 cursor-pointer transition-all ${
+                      themeMode === 'midnight'
+                        ? 'bg-slate-900 border-sky-400 ring-2 ring-sky-400/40 shadow-md text-white'
+                        : 'bg-slate-900/90 text-slate-100 border-slate-700 hover:border-slate-500'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">🌙</span>
+                      <span className="font-bold text-white text-sm">Midnight Obsidian (Dark)</span>
+                      {themeMode === 'midnight' && <span className="ml-auto text-sky-400 font-extrabold text-[11px] bg-sky-950 px-2 py-0.5 rounded-full border border-sky-500/40">Active</span>}
+                    </div>
+                    <p className="text-[11px] text-slate-300 font-normal leading-tight">
+                      Sleek dark mode. Reduces glare and evening agitation; prevents sundowning distress and saves OLED battery.
+                    </p>
+                  </div>
+
                   <div
                     onClick={() => {
                       setThemeMode('pastel');
                       showToast('Switched to Pastel Serenity Theme!');
                     }}
-                    className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                    className={`p-3 rounded-2xl border-2 cursor-pointer transition-all ${
                       themeMode === 'pastel'
                         ? 'bg-sky-50 border-sky-500 ring-2 ring-sky-300 shadow-md'
                         : 'bg-white border-ner-sand hover:bg-slate-50'
@@ -442,7 +463,7 @@ export const SettingsCustomizationModal: React.FC<Props> = ({ isOpen, onClose, l
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xl">🌿</span>
                       <span className="font-bold text-slate-900 text-sm">Pastel Serenity</span>
-                      {themeMode === 'pastel' && <span className="ml-auto text-sky-600 font-extrabold">Active</span>}
+                      {themeMode === 'pastel' && <span className="ml-auto text-sky-600 font-extrabold text-[11px] bg-sky-100 px-2 py-0.5 rounded-full border border-sky-300">Active</span>}
                     </div>
                     <p className="text-[11px] text-slate-600 font-normal leading-tight">
                       Soft sky blue, fresh mint green, and crisp white. Calms agitation and reduces sensory overload in dementia patients.
@@ -454,7 +475,7 @@ export const SettingsCustomizationModal: React.FC<Props> = ({ isOpen, onClose, l
                       setThemeMode('heritage');
                       showToast('Switched to Cultural Heritage Theme!');
                     }}
-                    className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                    className={`p-3 rounded-2xl border-2 cursor-pointer transition-all ${
                       themeMode === 'heritage'
                         ? 'bg-amber-50 border-ner-terracotta ring-2 ring-amber-300 shadow-md'
                         : 'bg-white border-ner-sand hover:bg-slate-50'
@@ -463,10 +484,94 @@ export const SettingsCustomizationModal: React.FC<Props> = ({ isOpen, onClose, l
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xl">🏛️</span>
                       <span className="font-bold text-ner-bark text-sm">Cultural Heritage</span>
-                      {themeMode === 'heritage' && <span className="ml-auto text-ner-terracotta font-extrabold">Active</span>}
+                      {themeMode === 'heritage' && <span className="ml-auto text-ner-terracotta font-extrabold text-[11px] bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">Active</span>}
                     </div>
                     <p className="text-[11px] text-ner-earth font-normal leading-tight">
                       Assamese terracotta, tea garden forest green, and warm cream. Celebrates regional North-East heritage.
+                    </p>
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setThemeMode('forest');
+                      showToast('Switched to Kaziranga Forest Theme!');
+                    }}
+                    className={`p-3 rounded-2xl border-2 cursor-pointer transition-all ${
+                      themeMode === 'forest'
+                        ? 'bg-emerald-50 border-emerald-600 ring-2 ring-emerald-300 shadow-md'
+                        : 'bg-white border-ner-sand hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">🌲</span>
+                      <span className="font-bold text-emerald-950 text-sm">Kaziranga Forest</span>
+                      {themeMode === 'forest' && <span className="ml-auto text-emerald-700 font-extrabold text-[11px] bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">Active</span>}
+                    </div>
+                    <p className="text-[11px] text-emerald-800 font-normal leading-tight">
+                      Lush botanical pine and jade green. Biophilic design principles lower cortisol and promote natural calm.
+                    </p>
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setThemeMode('sunset');
+                      showToast('Switched to Brahmaputra Sunset Theme!');
+                    }}
+                    className={`p-3 rounded-2xl border-2 cursor-pointer transition-all ${
+                      themeMode === 'sunset'
+                        ? 'bg-orange-50 border-orange-500 ring-2 ring-orange-300 shadow-md'
+                        : 'bg-white border-ner-sand hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">🌅</span>
+                      <span className="font-bold text-orange-950 text-sm">Brahmaputra Sunset</span>
+                      {themeMode === 'sunset' && <span className="ml-auto text-orange-700 font-extrabold text-[11px] bg-orange-100 px-2 py-0.5 rounded-full border border-orange-300">Active</span>}
+                    </div>
+                    <p className="text-[11px] text-orange-800 font-normal leading-tight">
+                      Warm glowing amber and coral silk. Energizing morning atmosphere that inspires alertness and active participation.
+                    </p>
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setThemeMode('lavender');
+                      showToast('Switched to Lavender Calm Theme!');
+                    }}
+                    className={`p-3 rounded-2xl border-2 cursor-pointer transition-all ${
+                      themeMode === 'lavender'
+                        ? 'bg-purple-50 border-purple-500 ring-2 ring-purple-300 shadow-md'
+                        : 'bg-white border-ner-sand hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">🌸</span>
+                      <span className="font-bold text-purple-950 text-sm">Lavender Calm</span>
+                      {themeMode === 'lavender' && <span className="ml-auto text-purple-700 font-extrabold text-[11px] bg-purple-100 px-2 py-0.5 rounded-full border border-purple-300">Active</span>}
+                    </div>
+                    <p className="text-[11px] text-purple-800 font-normal leading-tight">
+                      Soft periwinkle and lilac mist. Proven in clinical memory care to soothe restlessness and stabilize moods.
+                    </p>
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setThemeMode('high_contrast');
+                      showToast('Switched to High-Contrast Tactile Theme!');
+                    }}
+                    className={`p-3 rounded-2xl border-3 cursor-pointer transition-all sm:col-span-2 ${
+                      themeMode === 'high_contrast'
+                        ? 'bg-black text-amber-300 border-amber-400 ring-2 ring-amber-400 shadow-md'
+                        : 'bg-slate-900 text-amber-200 border-amber-300/60 hover:bg-black'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">👁️</span>
+                      <span className="font-extrabold text-amber-300 text-sm">High-Contrast Tactile (Geriatric A11y)</span>
+                      {themeMode === 'high_contrast' && <span className="ml-auto text-black font-extrabold text-[11px] bg-amber-300 px-2 py-0.5 rounded-full">Active</span>}
+                    </div>
+                    <p className="text-[11px] text-amber-100/90 font-bold leading-tight">
+                      Stark black, canary gold, bold outlines, and 60dp touch boundaries. Conforms to WCAG AAA for low-vision and cataract conditions.
                     </p>
                   </div>
                 </div>

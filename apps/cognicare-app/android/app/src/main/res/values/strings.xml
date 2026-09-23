@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CogniCare NER (SmritiSetu)</string>
+    <string name="title_activity_main">CogniCare NER (SmritiSetu)</string>
+    <string name="package_name">com.cognicare.ner</string>
+    <string name="custom_url_scheme">com.cognicare.ner</string>
+</resources>

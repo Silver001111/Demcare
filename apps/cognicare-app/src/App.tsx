@@ -1,9 +1,11 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { ShieldCheck, Heart, Activity, LogOut, Globe, Cloud, Settings } from 'lucide-react';
+import { ShieldCheck, Heart, Activity, LogOut, Globe, Cloud, Settings, Menu } from 'lucide-react';
 import { signOutUser } from './services/cloudSync';
 import { PatientHome } from './components/patient/PatientHome';
 import { LandingPage } from './components/auth/LandingPage';
 import { SettingsCustomizationModal } from './components/common/SettingsCustomizationModal';
+import { QuickNavigationMenu } from './components/common/QuickNavigationMenu';
+import { MobileInstallPrompt } from './components/common/MobileInstallPrompt';
 import { useAppStore } from './store/useAppStore';
 import { t } from './translations';
 
@@ -140,6 +142,7 @@ export function App() {
   const [showBlisterScanner, setShowBlisterScanner] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showQuickNav, setShowQuickNav] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
   useEffect(() => {
@@ -195,7 +198,7 @@ export function App() {
   const RoleIcon = userRole === 'patient' ? Heart : userRole === 'caregiver' ? Activity : ShieldCheck;
 
   return (
-    <div className="min-h-screen bg-ner-cream text-ner-bark flex flex-col justify-between font-sans">
+    <div className="min-h-screen app-main-surface text-ner-bark flex flex-col justify-between font-sans transition-colors duration-300">
       {/* Top Universal Persona Navigation Bar */}
       <header className="bg-white border-b-2 border-ner-earth/20 sticky top-0 z-40 shadow-sm backdrop-blur-md bg-white/90">
         <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between">
@@ -217,6 +220,16 @@ export function App() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Quick Navigation Dropdown Trigger (Dark theme button matching reference screenshot) */}
+            <button
+              onClick={() => setShowQuickNav(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#131722] hover:bg-slate-800 text-white rounded-full border border-slate-700 shadow-md transition-all text-xs font-bold"
+              title="Open Navigation Menu (Instant Jump to Any Section or Game)"
+            >
+              <Menu className="w-3.5 h-3.5 text-sky-400" />
+              <span className="tracking-wide">Navigation</span>
+            </button>
+
             {/* Universal Settings & Customization Button */}
             <button
               onClick={() => setShowSettingsModal(true)}
@@ -261,14 +274,14 @@ export function App() {
               </div>
             )}
 
-            {/* Theme Toggle */}
+            {/* Theme Selector Trigger */}
             <button
-              onClick={() => setThemeMode(themeMode === 'pastel' ? 'heritage' : 'pastel')}
-              className="px-3 py-1.5 rounded-full text-xs font-bold border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 transition-all flex items-center gap-1.5 shadow-sm"
-              title="Toggle Theme (Pastel Serenity vs Cultural Heritage)"
+              onClick={() => setShowQuickNav(true)}
+              className="px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 transition-all flex items-center gap-1.5 shadow-sm"
+              title="Switch Visual Theme (7 Curated Palettes)"
             >
-              <span>{themeMode === 'pastel' ? '🌿' : '🏛️'}</span>
-              <span className="hidden sm:inline font-semibold">{themeMode === 'pastel' ? 'Pastel Serenity' : 'Heritage Theme'}</span>
+              <span>{themeMode === 'midnight' ? '🌙' : themeMode === 'pastel' ? '🌿' : themeMode === 'heritage' ? '🏛️' : themeMode === 'forest' ? '🌲' : themeMode === 'sunset' ? '🌅' : themeMode === 'lavender' ? '🌸' : '👁️'}</span>
+              <span className="hidden sm:inline font-semibold capitalize">{themeMode.replace('_', ' ')}</span>
             </button>
 
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-ner-sand rounded-full border border-ner-earth/30">
@@ -468,12 +481,81 @@ export function App() {
         lang={language}
       />
 
+      {/* Quick Navigation Menu (Dropdown/Flyout matching user reference image) */}
+      <QuickNavigationMenu
+        isOpen={showQuickNav}
+        onClose={() => setShowQuickNav(false)}
+        lang={language}
+        onSelectGame={(g) => {
+          setActiveGame(g);
+          setShowReminiscence(false);
+          setShowSundowning(false);
+          setShowSOS(false);
+          setShowBlisterScanner(false);
+        }}
+        onOpenReminiscence={() => {
+          setActiveGame('none');
+          setShowReminiscence(true);
+          setShowSundowning(false);
+          setShowSOS(false);
+          setShowBlisterScanner(false);
+        }}
+        onOpenSundowning={() => {
+          setActiveGame('none');
+          setShowReminiscence(false);
+          setShowSundowning(true);
+          setShowSOS(false);
+          setShowBlisterScanner(false);
+        }}
+        onOpenSOS={() => {
+          setActiveGame('none');
+          setShowReminiscence(false);
+          setShowSundowning(false);
+          setShowSOS(true);
+          setShowBlisterScanner(false);
+        }}
+        onOpenBlisterScanner={() => {
+          setActiveGame('none');
+          setShowReminiscence(false);
+          setShowSundowning(false);
+          setShowSOS(false);
+          setShowBlisterScanner(true);
+        }}
+        onOpenSettings={() => setShowSettingsModal(true)}
+        onOpenLanguage={() => setShowLanguageModal(true)}
+        onReturnToHome={() => {
+          setActiveGame('none');
+          setShowReminiscence(false);
+          setShowSundowning(false);
+          setShowSOS(false);
+          setShowBlisterScanner(false);
+        }}
+      />
+
+      {/* Floating Quick Action Navigation Trigger (Accessible without scrolling back up) */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <button
+          onClick={() => setShowQuickNav(true)}
+          className="flex items-center gap-2 px-4 py-3 bg-[#131722] hover:bg-slate-800 text-white rounded-full border border-slate-700 shadow-2xl hover:scale-105 active:scale-95 transition-all text-xs sm:text-sm font-bold tracking-wide"
+          title="Open Navigation Menu"
+          style={{
+            boxShadow: '0 12px 28px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          <span className="p-1 bg-sky-500/20 text-sky-400 rounded-lg text-xs leading-none">🧭</span>
+          <span>Quick Nav</span>
+        </button>
+      </div>
+
       <footer className="bg-white border-t border-ner-earth/20 py-4 text-center text-xs font-semibold text-ner-earth">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>🌿 CogniCare NER (স্মৃতি-সেতু) • Smart India Hackathon 2026</span>
           <span>MDoNER & LGBRIMH Geriatric MedTech Platform</span>
         </div>
       </footer>
+
+      {/* Intelligent Mobile Install Prompt (PWA / Standalone on Android & iOS) */}
+      <MobileInstallPrompt />
     </div>
   );
 }

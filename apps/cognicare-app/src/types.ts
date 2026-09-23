@@ -136,7 +136,14 @@ export interface ReminderItem {
   repeat: string;
 }
 
-export type ThemeMode = 'pastel' | 'heritage';
+export type ThemeMode =
+  | 'pastel'
+  | 'heritage'
+  | 'midnight'
+  | 'forest'
+  | 'sunset'
+  | 'lavender'
+  | 'high_contrast';
 
 export interface FamilyMemoryPhoto {
   id: string;

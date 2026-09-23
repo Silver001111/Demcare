@@ -29,6 +29,18 @@ body {
   color: #3E2723;
   font-family: "Plus Jakarta Sans", system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Mobile Safe-Area Utilities */
+.safe-area-pt {
+  padding-top: max(env(safe-area-inset-top, 0px), 12px);
+}
+.safe-area-pb {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
 }
 
 /* Tactile Big Button Styles for Dementia Patients (60dp+ touch target) */
@@ -132,15 +144,135 @@ body {
   animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+/* Slide-left for drawer/flyout menu */
+@keyframes slideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slideLeft {
+  animation: slideLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Smooth scrolling across entire application */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scroll target glow highlight */
+:target,
+.section-target-highlight {
+  animation: sectionGlow 2s ease-out;
+}
+
+@keyframes sectionGlow {
+  0% {
+    box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.8), 0 10px 25px rgba(217, 119, 6, 0.25);
+  }
+  60% {
+    box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.4), 0 6px 15px rgba(217, 119, 6, 0.15);
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
 /* ========================================================
-   DUAL THEME ENGINE: PASTEL SERENITY vs CULTURAL HERITAGE
+   7-PALETTE THEME ENGINE: CLINICAL & AESTHETIC HARMONY
+   1. Midnight Obsidian (Dark Mode - Reference Screenshot Aesthetic)
+   2. Pastel Serenity (Soothing Soft Cyan & Mint)
+   3. Cultural Heritage (Assamese Bark & Terracotta)
+   4. Kaziranga Forest (Biophilic Zen Green)
+   5. Brahmaputra Sunset (Energizing Amber & Coral)
+   6. Lavender Calm (Neuro-Soothe Periwinkle & Violet)
+   7. High-Contrast Tactile (Geriatric Low-Vision WCAG AAA)
    ======================================================== */
 
 body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Pastel Serenity Theme (Light Blue + Soft Green + Crisp White) */
+/* 1. MIDNIGHT OBSIDIAN (DARK MODE - MATCHES REFERENCE SCREENSHOT) */
+[data-theme="midnight"],
+body.theme-midnight {
+  background-color: #0B0F17;
+  background-image: radial-gradient(at 0% 0%, #161B26 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, #111827 0px, transparent 50%);
+  color: #F8FAFC;
+}
+
+[data-theme="midnight"] .app-main-surface,
+body.theme-midnight .app-main-surface {
+  background-color: #0B0F17 !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="midnight"] header,
+body.theme-midnight header {
+  background-color: rgba(19, 27, 46, 0.95) !important;
+  border-color: rgba(51, 65, 85, 0.8) !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="midnight"] footer,
+body.theme-midnight footer {
+  background-color: #0B0F17 !important;
+  border-color: rgba(51, 65, 85, 0.6) !important;
+  color: #94A3B8 !important;
+}
+
+[data-theme="midnight"] .bg-white,
+body.theme-midnight .bg-white {
+  background-color: #161B26 !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="midnight"] .text-ner-bark,
+body.theme-midnight .text-ner-bark {
+  color: #F8FAFC !important;
+}
+
+[data-theme="midnight"] .text-ner-earth,
+body.theme-midnight .text-ner-earth {
+  color: #94A3B8 !important;
+}
+
+[data-theme="midnight"] .bg-ner-cream,
+body.theme-midnight .bg-ner-cream {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="midnight"] .bg-ner-sand,
+body.theme-midnight .bg-ner-sand {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #E2E8F0 !important;
+}
+
+[data-theme="midnight"] .gamosa-border,
+body.theme-midnight .gamosa-border {
+  border-top: 5px solid #38BDF8 !important; /* Electric Cyan */
+}
+
+[data-theme="midnight"] .btn-tactile,
+body.theme-midnight .btn-tactile {
+  box-shadow: 0 5px 0 0 #0284C7, 0 8px 16px rgba(2, 132, 199, 0.25) !important;
+}
+
+[data-theme="midnight"] .btn-tactile:active,
+body.theme-midnight .btn-tactile:active {
+  box-shadow: 0 2px 0 0 #0284C7, 0 4px 8px rgba(2, 132, 199, 0.15) !important;
+}
+
+/* 2. PASTEL SERENITY THEME */
 [data-theme="pastel"],
 body.theme-pastel {
   background-color: #F0F9FF; /* Sky 50 */
@@ -149,7 +281,6 @@ body.theme-pastel {
   color: #0F172A; /* Slate 900 */
 }
 
-/* Pastel adjustments for cards */
 [data-theme="pastel"] .bg-white {
   background-color: #FFFFFF !important;
   border-color: #BAE6FD !important; /* Sky 200 */
@@ -159,7 +290,6 @@ body.theme-pastel {
   border-top: 5px solid #0284C7 !important; /* Sky 600 */
 }
 
-/* Pastel tactile buttons */
 [data-theme="pastel"] .btn-tactile {
   box-shadow: 0 5px 0 0 #0369A1, 0 8px 16px rgba(2, 132, 199, 0.15) !important;
 }
@@ -169,13 +299,150 @@ body.theme-pastel {
 }
 
 [data-theme="pastel"] .btn-tactile-green {
-  background-color: #059669 !important; /* Emerald 600 */
+  background-color: #059669 !important;
   border-color: #047857 !important;
   box-shadow: 0 5px 0 0 #047857, 0 8px 16px rgba(5, 150, 105, 0.2) !important;
 }
 
-[data-theme="pastel"] .btn-tactile-green:active {
-  box-shadow: 0 2px 0 0 #047857, 0 4px 8px rgba(5, 150, 105, 0.15) !important;
+/* 3. CULTURAL HERITAGE (DEFAULT ASSAMESE EARTH & SILK) */
+[data-theme="heritage"],
+body.theme-heritage {
+  background-color: #FFFDF9;
+  color: #3E2723;
+}
+
+/* 4. KAZIRANGA FOREST (BIOPHILIC ZEN GREEN) */
+[data-theme="forest"],
+body.theme-forest {
+  background-color: #F0FDF4; /* Mint 50 */
+  background-image: radial-gradient(at 0% 0%, #DCFCE7 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, #BBF7D0 0px, transparent 50%);
+  color: #064E3B; /* Emerald 900 */
+}
+
+[data-theme="forest"] .bg-white {
+  background-color: #FFFFFF !important;
+  border-color: #A7F3D0 !important;
+}
+
+[data-theme="forest"] .gamosa-border {
+  border-top: 5px solid #059669 !important;
+}
+
+[data-theme="forest"] .btn-tactile {
+  box-shadow: 0 5px 0 0 #047857, 0 8px 16px rgba(5, 150, 105, 0.2) !important;
+}
+
+/* 5. BRAHMAPUTRA SUNSET (ENERGIZING AMBER & CORAL) */
+[data-theme="sunset"],
+body.theme-sunset {
+  background-color: #FFF7ED; /* Orange 50 */
+  background-image: radial-gradient(at 0% 0%, #FFEDD5 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, #FEF3C7 0px, transparent 50%);
+  color: #431407; /* Warm dark brown */
+}
+
+[data-theme="sunset"] .bg-white {
+  background-color: #FFFFFF !important;
+  border-color: #FED7AA !important;
+}
+
+[data-theme="sunset"] .gamosa-border {
+  border-top: 5px solid #EA580C !important;
+}
+
+[data-theme="sunset"] .btn-tactile {
+  box-shadow: 0 5px 0 0 #C2410C, 0 8px 16px rgba(234, 88, 12, 0.25) !important;
+}
+
+/* 6. LAVENDER CALM (NEURO-SOOTHE PERIWINKLE & VIOLET) */
+[data-theme="lavender"],
+body.theme-lavender {
+  background-color: #FAF5FF; /* Purple 50 */
+  background-image: radial-gradient(at 0% 0%, #F3E8FF 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, #EDE9FE 0px, transparent 50%);
+  color: #2E1065; /* Deep purple */
+}
+
+[data-theme="lavender"] .bg-white {
+  background-color: #FFFFFF !important;
+  border-color: #DDD6FE !important;
+}
+
+[data-theme="lavender"] .gamosa-border {
+  border-top: 5px solid #7C3AED !important;
+}
+
+[data-theme="lavender"] .btn-tactile {
+  box-shadow: 0 5px 0 0 #6D28D9, 0 8px 16px rgba(124, 58, 237, 0.2) !important;
+}
+
+/* 7. HIGH-CONTRAST TACTILE (GERIATRIC A11Y WCAG AAA) */
+[data-theme="high_contrast"],
+body.theme-high_contrast {
+  background-color: #000000 !important;
+  color: #FACC15 !important; /* Canary Gold */
+}
+
+[data-theme="high_contrast"] .app-main-surface,
+body.theme-high_contrast .app-main-surface {
+  background-color: #000000 !important;
+  color: #FACC15 !important;
+}
+
+[data-theme="high_contrast"] header,
+body.theme-high_contrast header {
+  background-color: #000000 !important;
+  border-color: #FACC15 !important;
+  color: #FACC15 !important;
+}
+
+[data-theme="high_contrast"] footer,
+body.theme-high_contrast footer {
+  background-color: #000000 !important;
+  border-color: #FACC15 !important;
+  color: #FACC15 !important;
+}
+
+[data-theme="high_contrast"] .bg-white,
+body.theme-high_contrast .bg-white {
+  background-color: #0D0D0D !important;
+  border: 3px solid #FACC15 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="high_contrast"] .text-ner-bark,
+body.theme-high_contrast .text-ner-bark {
+  color: #FFFFFF !important;
+}
+
+[data-theme="high_contrast"] .text-ner-earth,
+body.theme-high_contrast .text-ner-earth {
+  color: #FEF08A !important;
+}
+
+[data-theme="high_contrast"] .bg-ner-cream,
+body.theme-high_contrast .bg-ner-cream {
+  background-color: #000000 !important;
+  color: #FACC15 !important;
+}
+
+[data-theme="high_contrast"] .bg-ner-sand,
+body.theme-high_contrast .bg-ner-sand {
+  background-color: #1A1A1A !important;
+  border: 2px solid #FACC15 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="high_contrast"] .gamosa-border,
+body.theme-high_contrast .gamosa-border {
+  border-top: 6px solid #FACC15 !important;
+}
+
+[data-theme="high_contrast"] .btn-tactile,
+body.theme-high_contrast .btn-tactile {
+  border: 3px solid #FACC15 !important;
+  box-shadow: 0 5px 0 0 #CA8A04, 0 8px 16px rgba(250, 204, 21, 0.3) !important;
 }
 
 /* Float and sway animations for Memory Garden */

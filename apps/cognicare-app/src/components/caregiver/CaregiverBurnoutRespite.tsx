@@ -254,14 +254,31 @@ _CogniCare Caregiver Health Protection • LGBRIMH Tezpur_`;
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <button
             onClick={handleToggleRecording}
+            disabled={isAnalyzing}
             className={`btn-tactile w-full sm:w-auto px-7 py-3.5 text-base font-bold rounded-2xl flex items-center justify-center gap-2 border-2 shadow-md transition-all ${
-              isRecording
+              isAnalyzing
+                ? 'bg-purple-600 text-white border-purple-900'
+                : isRecording
                 ? 'bg-red-600 text-white border-red-900 animate-pulse'
                 : 'bg-pink-600 hover:bg-pink-700 text-white border-pink-900'
             }`}
           >
-            {isRecording ? <Square className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-            <span>{isRecording ? `Recording... (${recordingSeconds}s / 45s)` : 'Start Daily Voice Check-in'}</span>
+            {isAnalyzing ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Analyzing Vocal Biomarkers...</span>
+              </span>
+            ) : isRecording ? (
+              <>
+                <Square className="w-5 h-5" />
+                <span>Recording... ({recordingSeconds}s / 45s)</span>
+              </>
+            ) : (
+              <>
+                <Mic className="w-5 h-5" />
+                <span>Start Daily Voice Check-in</span>
+              </>
+            )}
           </button>
 
           <span className="text-xs text-ner-earth">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Volume2, Sparkles, RotateCcw } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { banditEngine, calculateCognitiveScore } from '../../services/aiEngine';
@@ -22,11 +22,11 @@ interface Item {
 }
 
 export const MarketSpotDifference: React.FC<Props> = ({ patient, lang, onBack, onFinishSession }) => {
-  const [difficulty, setDifficulty] = useState<number>(() => banditEngine.selectDifficulty());
+  const [difficulty] = useState<number>(() => banditEngine.selectDifficulty());
   const [sceneA, setSceneA] = useState<Item[]>([]);
   const [sceneB, setSceneB] = useState<Item[]>([]);
   const [attempts, setAttempts] = useState(0);
-  const [startTime, setStartTime] = useState<number>(Date.now());
+  const [startTime, setStartTime] = useState<number>(() => Date.now());
   const [isCompleted, setIsCompleted] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [differencesFound, setDifferencesFound] = useState<Set<string>>(new Set());
@@ -37,15 +37,7 @@ export const MarketSpotDifference: React.FC<Props> = ({ patient, lang, onBack, o
 
   const requiredDifferences = difficulty <= 2 ? 1 : difficulty <= 4 ? 2 : 3;
 
-  useEffect(() => {
-    initGame(difficulty);
-    const introText = lang === 'as' 
-      ? 'দুখন ছবিৰ মাজত কি পাৰ্থক্য আছে বিচাৰি উলিয়াওক।' 
-      : 'Spot the difference between the two pictures.';
-    audioSpeech.speak(introText, lang);
-  }, [difficulty]);
-
-  const initGame = (lvl: number) => {
+  const initGame = useCallback((lvl: number) => {
     const numBaseItems = lvl <= 2 ? 4 : lvl <= 4 ? 6 : 8;
     const currentBaseItems = BASE_ITEMS.slice(0, numBaseItems);
     
@@ -81,9 +73,17 @@ export const MarketSpotDifference: React.FC<Props> = ({ patient, lang, onBack, o
     setAttempts(0);
     setIsCompleted(false);
     setStartTime(Date.now());
-  };
+  }, [BASE_ITEMS, DIFFERENCE_ITEMS]);
 
-  const handleSpotDifference = (item: Item, isSceneB: boolean) => {
+  useEffect(() => {
+    initGame(difficulty);
+    const introText = lang === 'as' 
+      ? 'দুখন ছবিৰ মাজত কি পাৰ্থক্য আছে বিচাৰি উলিয়াওক।' 
+      : 'Spot the difference between the two pictures.';
+    audioSpeech.speak(introText, lang);
+  }, [difficulty, initGame, lang]);
+
+  const handleSpotDifference = (item: Item, _isSceneB?: boolean) => {
     if (isCompleted || differencesFound.has(item.id)) return;
     
     setAttempts(prev => prev + 1);

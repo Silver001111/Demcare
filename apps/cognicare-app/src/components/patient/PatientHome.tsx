@@ -84,7 +84,7 @@ export const PatientHome: React.FC<Props> = ({
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-6 animate-fadeIn font-sans">
       {/* Top Bar: Profile & Language Selector */}
-      <div className="flex items-center justify-between bg-white border-2 border-ner-earth/20 rounded-3xl p-4 md:p-5 shadow-card-warm gamosa-border transition-all hover:shadow-xl">
+      <div id="section-overview" className="flex items-center justify-between bg-white border-2 border-ner-earth/20 rounded-3xl p-4 md:p-5 shadow-card-warm gamosa-border transition-all hover:shadow-xl">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 md:w-20 md:h-20 bg-amber-100 rounded-2xl flex items-center justify-center text-4xl border-2 border-amber-300 shadow-inner overflow-hidden shrink-0">
             <img src={patient.photoUrl} alt="Patient" className="w-full h-full object-cover" />
@@ -139,15 +139,17 @@ export const PatientHome: React.FC<Props> = ({
       </div>
 
       {/* Friendly Proactive Voice & Text Companion Bar */}
-      <ProactiveCompanionBar
-        patient={patient}
-        lang={lang}
-        reminders={reminders}
-        onStartRecommendedGame={() => onStartGame('card_match')}
-      />
+      <div id="section-companion">
+        <ProactiveCompanionBar
+          patient={patient}
+          lang={lang}
+          reminders={reminders}
+          onStartRecommendedGame={() => onStartGame('card_match')}
+        />
+      </div>
 
       {/* Daily Progress Ring & Goal Banner */}
-      <div className="bg-white border-2 border-ner-earth/20 rounded-3xl p-5 shadow-card-warm flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div id="section-progress" className="bg-white border-2 border-ner-earth/20 rounded-3xl p-5 shadow-card-warm flex flex-col sm:flex-row items-center justify-between gap-6 transition-all">
         <div className="flex items-center gap-5">
           <div className="relative w-24 h-24 shrink-0 flex items-center justify-center">
             <svg width="96" height="96" viewBox="0 0 100 100" className="transform -rotate-90">
@@ -209,10 +211,14 @@ export const PatientHome: React.FC<Props> = ({
       </div>
 
       {/* Gamified Memory Garden */}
-      <MemoryGarden lang={lang} />
+      <div id="section-garden" className="transition-all">
+        <MemoryGarden lang={lang} />
+      </div>
 
       {/* Daily Routine Rhythm Checklist */}
-      <DailyRoutineChecklist lang={lang} />
+      <div id="section-routine" className="transition-all">
+        <DailyRoutineChecklist lang={lang} />
+      </div>
 
       {/* Auto-suggested Sundowning Banner (4 PM - 8 PM) */}
       {isSundowningHour && (
@@ -241,7 +247,7 @@ export const PatientHome: React.FC<Props> = ({
 
       {/* Gentle Daily Reminder Banner */}
       {reminders.length > 0 && (
-        <div className="bg-amber-50 border-3 border-ner-amber rounded-3xl p-4 md:p-5 shadow-card-warm">
+        <div id="section-reminders" className="bg-amber-50 border-3 border-ner-amber rounded-3xl p-4 md:p-5 shadow-card-warm transition-all">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2.5">
               <span className="text-2xl">💊</span>
@@ -313,7 +319,7 @@ export const PatientHome: React.FC<Props> = ({
       )}
 
       {/* Main Action Grid: Cultural Cognitive Games */}
-      <div>
+      <div id="section-games" className="transition-all">
         <div className="flex items-center justify-between mb-4 px-1">
           <h2 className="text-2xl font-serif font-bold text-ner-bark flex items-center gap-2">
             <span>🧠 {t('cognitive_workouts', lang)}</span>
@@ -503,7 +509,7 @@ export const PatientHome: React.FC<Props> = ({
       </div>
 
       {/* Story of the Day (Photographic Reminiscence Preview) */}
-      <div className="bg-white border-2 border-ner-earth/20 rounded-3xl p-5 shadow-card-warm flex flex-col md:flex-row items-center gap-5">
+      <div id="section-story" className="bg-white border-2 border-ner-earth/20 rounded-3xl p-5 shadow-card-warm flex flex-col md:flex-row items-center gap-5 transition-all">
         <div className="relative w-full md:w-56 h-40 rounded-2xl overflow-hidden shrink-0 border-2 border-amber-200">
           <img
             src="/images/majuli_satra.jpg"
@@ -572,7 +578,7 @@ export const PatientHome: React.FC<Props> = ({
       </div>
 
       {/* Secondary Supportive Features */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+      <div id="section-tools" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 transition-all">
         <button
           onClick={onOpenReminiscence}
           className="btn-tactile bg-gradient-to-br from-amber-50 to-orange-100 border-2 border-ner-amber/50 p-4 rounded-3xl flex items-center gap-3.5 text-left hover:shadow-lg hover:-translate-y-1 transition-all"

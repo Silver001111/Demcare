@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { TrendingUp, Sparkles, AlertTriangle, ShieldCheck, Heart, Volume2, Calendar, Utensils, Sun, Music, Compass } from 'lucide-react';
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   ReferenceLine,
-  Area,
   ComposedChart,
 } from 'recharts';
 import { PatientProfile, GameSession, LanguageCode } from '../../types';
@@ -119,6 +116,14 @@ export const CognitiveTrajectoryForecaster: React.FC<Props> = ({
               12 Months
             </button>
           </div>
+
+          <button
+            onClick={() => setActiveInterventionLevel(activeInterventionLevel === 'high' ? 'moderate' : 'high')}
+            className="px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-300 rounded-xl text-xs font-bold transition-colors"
+            title="Toggle Intensive vs Moderate Therapy Projection"
+          >
+            {activeInterventionLevel === 'high' ? '⚡ High Intensity' : '🌿 Moderate'}
+          </button>
 
           <button
             onClick={handleSpeakPrescription}

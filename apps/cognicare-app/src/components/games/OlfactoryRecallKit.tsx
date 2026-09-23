@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Volume2, Sparkles, CheckCircle2, AlertTriangle, ShieldCheck, HeartHandshake, Eye, Award } from 'lucide-react';
+import { ArrowLeft, Volume2, Award } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { audioSpeech } from '../../services/audioSpeech';
 import { calculateCognitiveScore } from '../../services/aiEngine';
@@ -144,7 +144,7 @@ export const OlfactoryRecallKit: React.FC<Props> = ({
   const [currentStep, setCurrentStep] = useState(0); // 0 to 4
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
   const [isScratched, setIsScratched] = useState(false);
-  const [startTime] = useState<number>(Date.now());
+  const [startTime] = useState<number>(() => Date.now());
   const [isComplete, setIsComplete] = useState(false);
 
   const activeZone = AROMA_ZONES[currentStep];
